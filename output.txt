@@ -1,6 +1,0 @@
-interface GigabitEthernet1/0/1
- description <==Server Port==>
-
- switchport access vlan 30
- switchport mode access
-
