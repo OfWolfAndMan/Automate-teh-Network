@@ -3,7 +3,7 @@
 #Following the final command
 
 event manager applet INT_SHUT
- event none
+ event timer cron cron-entry "* * * * *"
  action 0.9 cli command "enable"
  action 1.0 cli command "config terminal"
  action 1.1 cli command "interface g0/0"
