@@ -1,0 +1,28 @@
+- hosts: cumulus
+  gather_facts: False
+  remote_user: cumulus
+
+  #vars:
+
+  tasks:
+    - name: Change Quagga daemon parameters
+      command: "{{ item }}"
+      with_items:
+        - sed -i 's/zebra=no/zebra=yes/g' /etc/quagga/daemons
+        - sed -i 's/ospfd=no/ospfd=yes/g' /etc/quagga/daemons
+        - sed -i 's/bgpd=no/bgpd=yes/g' /etc/quagga/daemons
+        - sed -i 's/pimd=no/pimd=yes/g' /etc/quagga/daemons
+      become: true
+      become_method: sudo
+      become_user: root
+
+    - name: Start the Quagga daemon
+      command: "{{ item }}"
+      with_items:
+        - systemctl enable quagga.service
+        - systemctl start quagga.service
+      become: true
+      become_method: sudo
+      become_user: root
+
+     
