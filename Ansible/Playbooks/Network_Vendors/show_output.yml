@@ -1,0 +1,37 @@
+---
+- name: SNMP Configuration Output
+  hosts: Switches
+  gather_facts: false
+  connection: local
+     
+  #vars:
+    #ios_provider:
+      #transport: cli
+
+  tasks:
+
+
+    - name: show hostname
+      ios_command:
+        commands:
+          - show run | include snmp
+        provider: "{{ network_lab }}"
+      register: output
+
+    - name: Get SNMP Facts
+      when: output|succeeded
+      snmp_facts:
+        host: "{{ inventory_hostname }}"
+        version: 2c
+        community: 
+      delegate_to: local
+
+    #- name: show output
+      #when: '"SW4" in "{{ output.stdout }}"'
+      #debug:
+        #msg: '{{ output }}'
+
+    #- name: Deploy config from template
+       #ios_config:
+          #src: "/path/to/config.cfg"
+          #host: "{{ inventory_hostname }}"

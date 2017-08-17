@@ -1,0 +1,23 @@
+#NOTE: Putting SSH password inline with vars here [group:vars] requires sshpass to be installed.
+#===============================================================================================
+#INSTALLING ON LINUX (DEBIAN):
+#	apt-get install sshpass -y
+#===============================================================================================
+#INSTALLING ON OS X (Must have Homebrew installed!):
+#	brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
+#===============================================================================================
+
+[cumulus]
+C-VX-01 ansible_host=10.51.60.57
+C-VX-02 ansible_host=10.51.60.58
+C-VX-03 ansible_host=10.51.60.59
+
+[cumulus:vars]
+ansible_ssh_user=cumulus
+ansible_ssh_pass=CumulusLinux!
+
+[Switches]
+SW1 ansible_host=192.168.10.102
+SW2 ansible_host=192.168.10.103
+SW3 ansible_host=192.168.10.104
+SW4 ansible_host=192.168.10.105

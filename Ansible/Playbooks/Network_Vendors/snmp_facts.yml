@@ -1,0 +1,5 @@
+- snmp_facts:
+    host: '{{ inventory_hostname }}'
+    version: 2c
+    community: 
+  delegate_to: local
