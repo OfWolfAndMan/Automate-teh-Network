@@ -1,0 +1,23 @@
+---
+
+vlans_common:
+   - vlan_id: 801
+     name: User
+   - vlan_id: 802
+     name: VoIP
+   - vlan_id: 803
+     name: "IoT Devices"
+   - vlan_id: 804
+     name: "Wireless LAN"
+   - vlan_id: 805
+     name: "Industrial Control"
+   - vlan_id: 1101
+     name: "Server Frontend"
+   - vlan_id: 1102
+     name: "Server Backend"
+   - vlan_id: 1104
+     name: "Server SAN"
+   - vlan_id: 1105
+     name: "Server Virtual"
+   - vlan_id: 2005
+     name: "Device Mgmt"

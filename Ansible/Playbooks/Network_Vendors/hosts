@@ -21,3 +21,10 @@ SW1 ansible_host=192.168.10.102
 SW2 ansible_host=192.168.10.103
 SW3 ansible_host=192.168.10.104
 SW4 ansible_host=192.168.10.105
+
+[Routers]
+R11 ansible_host=192.168.10.111
+
+[Network-Physical:children]
+Switches
+Routers

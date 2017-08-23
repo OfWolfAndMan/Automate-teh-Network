@@ -5,8 +5,6 @@
   connection: local
      
   #vars:
-    #ios_provider:
-      #transport: cli
 
   tasks:
 
@@ -19,12 +17,13 @@
       register: output
 
     - name: Get SNMP Facts
-      when: output|succeeded
-      snmp_facts:
-        host: "{{ inventory_hostname }}"
-        version: 2c
-        community: 
-      delegate_to: local
+      debug:
+        var: output
+      #snmp_facts:
+        #host: "{{ inventory_hostname }}"
+        #version: 2c
+        #community: 
+      #delegate_to: local
 
     #- name: show output
       #when: '"SW4" in "{{ output.stdout }}"'
