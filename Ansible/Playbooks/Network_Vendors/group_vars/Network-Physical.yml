@@ -40,16 +40,16 @@ aaa:
 
 domain:
   name_servers:
-    -ip: 10.98.44.19
-    -ip: 10.98.45.25
+    - ip: 10.98.44.19
+    - ip: 10.98.45.25
   name: yo-momma.likes-cheesy-bread.net
 
 ntp:
   servers:
-    -ip: 192.168.24.62
-     psk: boringpsk
-    -ip: 192.168.98.25
-     psk: randompsk
+    - ip: 192.168.24.62
+      psk: boringpsk
+    - ip: 192.168.98.25
+      psk: randompsk
 
 vtp:
   domain: vtpisdead
