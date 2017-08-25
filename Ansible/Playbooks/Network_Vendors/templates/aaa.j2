@@ -1,0 +1,23 @@
+aaa new-model
+!
+!
+aaa authentication attempts login 4
+aaa authentication login default group {{ aaa.auth_protocol }} local
+aaa authentication enable default group {{ aaa.auth_protocol }} enable
+aaa authorization exec default group {{ aaa.auth_protocol }} local 
+aaa accounting exec default start-stop group {{ aaa.auth_protocol }}
+aaa accounting system default start-stop group {{ aaa.auth_protocol }}
+!
+{% if aaa.auth_protocol == "tacacs" %}
+{% for server in aaa.aaa_servers %}
+tacacs server {{ server.instance }}
+ address ipv4 {{ server.ip }}
+ key {{ server.key }}
+{% endfor %}
+{% elif aaa.auth_protocol == "radius" %}
+{% for server in aaa.aaa_servers %}
+radius server {{ server.instance }}
+ address ipv4 {{ server.ip }} auth-port 1812 acct-port 1813
+ key {{ server.key }} 
+{% endfor %}
+{% endif %}

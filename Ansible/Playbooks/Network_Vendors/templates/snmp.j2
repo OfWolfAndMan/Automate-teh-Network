@@ -1,0 +1,17 @@
+ip access-list standard {{ snmp.whitelist_name }}
+{% for entry in snmp.whitelist %}
+ remark {{ entry.remark }}
+ {{ entry.clause }} {{ entry.network }} {{ entry.iverse_mask }} log
+{% endfor %}
+
+{% for community in snmp.communities %}
+snmp-server community {{ community.community }} {{ community.type | upper }} {{ snmp.whitelist_name }}
+{% endfor %}
+snmp-server location {{ snmp.location }}
+snmp-server contact {{ snmp.contact }}
+{% for trap in snmp.traps %}
+snmp-server enable traps {{ trap.trap }}
+{% endfor %}
+{% for host in snmp.hosts %}
+snmp-server host {{ host.ip }} {{ host.community }}
+{% endfor %}
