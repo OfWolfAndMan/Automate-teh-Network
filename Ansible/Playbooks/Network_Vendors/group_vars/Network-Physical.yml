@@ -1,11 +1,19 @@
 ---
 
+banner:
+  entity: Turd Sandwich
+
+console:
+  password: password909
+
 snmp:
   contact: Joe Schmoe
   location: Yo-Mommas-House
   hosts:
     - ip: 10.24.92.93
+      community: pianasfoj
     - ip: 10.24.92.96
+      community: asdbgikai
   communities:
     - community: dingleberries
       type: ro
@@ -15,21 +23,32 @@ snmp:
     - trap: tty
     - trap: config
     - trap: vlan-membership
+    - trap: envmon
+    - trap: cpu
+  whitelist_name: SNMP_ACCESS
   whitelist:
     - network: 10.1.50.0
       iverse_mask: 0.0.0.255
+      remark: Solarwinds
+      clause: permit
     - network: 172.16.92.0
       iverse_mask: 0.0.0.127
+      remark: Splunk
+      clause: permit
     - network: 10.10.51.64
-      iverse_mask: 0.0.0.31 
+      iverse_mask: 0.0.0.31
+      remark: SNMP_Test
+      clause: permit 
 
 aaa:
   auth_protocol: tacacs
-  aaa_servers
+  aaa_servers:
     - ip: 10.10.10.52
-      psk: boringpsk
+      key: boringpsk
+      instance: AAA_MAIN
     - ip: 10.10.10.62
-      psk: randompsk
+      key: randompsk
+      instance: AAA_SECONDARY
   aaa_group_name: TACACS_SERVER
   enable_secret: secretpassword
   local_users:
@@ -58,3 +77,34 @@ vtp:
 
 logging: 
   server: 10.24.91.89
+
+ssh:
+  whitelist_name: SSH_ACCESS
+  whitelist:
+    - ip: 10.29.94.29
+      remark: Automation Server
+      clause: permit
+      iverse_mask: 0.0.0.0  
+    - ip: 10.92.0.0
+      remark: NOC Support
+      clause: permit
+      iverse_mask: 0.1.255.255
+    - ip: 192.168.90.64
+      remark: VPN Admins
+      clause: permit
+      iverse_mask: 0.0.0.63 
+  vty_pass: password101
+  algorithms: [aes192-ctr, aes256-ctr]
+
+stp:
+  mode: rapid-pvst
+  priority:
+    - vlans: 102,205,509,515-520,1009-1091
+      pri: 4096
+    - vlans: 201,303-305,409,616-620,2013-2035
+      pri: 8192
+
+interface_schema: 
+  access: GigabitEthernet0/0/
+  trunk: TenGigabitEthernet1/0/
+
