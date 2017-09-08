@@ -33,7 +33,7 @@ CREATE TABLE network_interfaces (
 );
 
 
-ALTER TABLE network_interfaces OWNER TO awathen;
+ALTER TABLE network_interfaces OWNER TO postgresql;
 
 --
 -- Data for Name: network_interfaces; Type: TABLE DATA; Schema: public; Owner: awathen
