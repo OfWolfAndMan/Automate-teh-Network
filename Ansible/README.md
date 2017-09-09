@@ -28,3 +28,5 @@ Built in python 2.7, although will be migrated to python 3.6 soon due to nearing
 - Topology maps
 
 - Further development of roles
+
+- AWX OR Ara integration. Not sure which yet
