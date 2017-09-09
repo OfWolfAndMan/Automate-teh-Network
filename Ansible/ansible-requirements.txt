@@ -1,3 +1,7 @@
 #Encompasses requirements for Ansible, NAPALM
 #and other relevant dependencies
-ansible napalm textfsm gtextfsm
+ansible
+napalm 
+textfsm
+gtextfsm
+terminal
