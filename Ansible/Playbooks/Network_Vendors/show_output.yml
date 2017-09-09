@@ -12,7 +12,7 @@
     - name: show hostname
       ios_command:
         commands:
-          - show run | include aaa
+          - show run | include snmp
         provider: "{{ network_lab }}"
       register: output
 
