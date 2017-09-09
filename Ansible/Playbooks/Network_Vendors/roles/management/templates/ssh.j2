@@ -1,0 +1,12 @@
+crypto key generate rsa modulus 2048
+ip ssh time-out 60
+ip ssh version 2
+ip scp server enable
+!
+ip ssh server algorithm encryption {% for algorithm in ssh.algorithms %}{{ algorithm }} {% endfor %}
+!
+ip access-list standard {{ ssh.whitelist_name }}
+{% for entry in ssh.whitelist %}
+ remark {{ entry.remark }}
+ {{ entry.clause }} {{ entry.ip }} {{ entry.iverse_mask }} log
+{% endfor %}
