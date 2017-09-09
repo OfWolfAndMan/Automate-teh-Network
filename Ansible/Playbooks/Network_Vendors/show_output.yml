@@ -1,6 +1,6 @@
 ---
 - name: SNMP Configuration Output
-  hosts: Switches
+  hosts: Routers
   gather_facts: false
   connection: local
      
@@ -12,13 +12,16 @@
     - name: show hostname
       ios_command:
         commands:
-          - show run | include snmp
+          - show run | include aaa
         provider: "{{ network_lab }}"
       register: output
 
     - name: Get SNMP Facts
       debug:
-        var: output
+        msg: "{{ inventory_hostname }} contains the command {{ item }}"
+        #var:
+      with_items: "{{ output.stdout_lines }}"
+      when: "'new-model' in item"
       #snmp_facts:
         #host: "{{ inventory_hostname }}"
         #version: 2c

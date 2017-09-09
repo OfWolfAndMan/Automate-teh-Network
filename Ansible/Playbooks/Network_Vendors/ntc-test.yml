@@ -1,0 +1,31 @@
+---
+
+- name: GET STRUCTURED DATA BACK FROM CLI DEVICES
+  hosts: Routers
+  connection: local
+  gather_facts: False
+
+  tasks:
+
+    - name: GET INTERFACES IN REAL TIME
+      ntc_show_command:
+        connection: ssh
+        platform: "{{ platform }}"
+        command: "show ip int br | exc unass"
+        template_dir: "../../../../ntc-ansible/ntc-templates/templates/"
+        #NOTE: The above template_dir does not allow "~/" in the path. Use absolute path!
+        provider: "{{ network_lab }}"
+      register: result
+
+    - name: INSERT IP INTERFACES INTO SQL Tables
+      #Variables MUST be in quotations!
+      shell: >
+        psql -U awathen -c "INSERT INTO network_interfaces VALUES 
+        ('{{ inventory_hostname }}', '{{ result.response[0]['intf'] }}', 
+        '{{ result.response[0]['ipaddr'] }}', '{{ result.response[0]['proto'] }}', 
+        '{{ result.response[0]['status'] }}');"
+      delegate_to: localhost
+      
+      #- debug: #var=result
+       #   msg: "{{ item }}"
+        #with_items: "{{ result['response'] }}"

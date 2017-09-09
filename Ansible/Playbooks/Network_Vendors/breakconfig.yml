@@ -1,0 +1,13 @@
+---
+
+- name: Disable SNMP community
+  hosts: Routers
+  gather_facts: false
+  connection: local
+  tasks:
+  - ios_config:
+      provider: "{{ network_lab }}"
+      lines:
+      - "no snmp-server community public"
+      - "no snmp-server community private"
+ 

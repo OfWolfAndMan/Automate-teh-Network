@@ -1,0 +1,26 @@
+---
+
+- name: GET STRUCTURED DATA BACK FROM CLI DEVICES
+  hosts: avaya
+  connection: local
+  gather_facts: False
+
+  tasks:
+
+    - name: GET VLANS IN REAL TIME
+      ntc_show_command:
+        connection: netmiko_ssh
+        platform: avaya_ers
+        command: "show sys-info"
+        username: "{{ avaya_network.username }}"
+        host: "{{ inventory_hostname }}"
+        password: "{{ avaya_network.password }}"
+        template_dir: "../../../../ntc-templates/templates/"
+        #NOTE: The above template_dir does not allow "~/" in the path. Use absolute path!
+        #provider: "{{ network_lab }}"
+      register: result
+
+    - name: SHOW VLANS
+      debug: var=result
+          #msg: "{{ item }}"
+       #with_items: "{{ result['response'] }}"
