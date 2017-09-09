@@ -21,3 +21,5 @@ netflow:
     exporter:
     cache_timeout_active:
     statistics:
+
+platform: cisco_ios
