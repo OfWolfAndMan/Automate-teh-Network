@@ -5,6 +5,4 @@
    #include_vars: group_vars/Network-Physical.yml
 
 - name: GENERATE CONFIGS FOR EACH OS
-  template:
-    src: "templates/Network-Physical.j2"
-    dest: "../configs//{{ inventory_hostname }}.cfg"
+  template: src=Network-Physical.j2 dest={{ configs }}/management-{{ inventory_hostname }}.cfg

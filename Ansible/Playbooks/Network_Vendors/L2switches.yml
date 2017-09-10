@@ -1,8 +1,12 @@
 ---
 
 - name: PLAY 1 - GENERATE CONFIGURATIONS
-  hosts: Network-Physical
-  connection: local
+  hosts: Switches
+  vars:
+    configs: configs
+
+  pre_tasks:
+  - file: path={{ configs }} state=directory
 
   roles:
-    - management
+  - management
