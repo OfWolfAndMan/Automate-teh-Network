@@ -1,0 +1,7 @@
+show inf ven
+SW4#show inventory 
+NAME: "1", DESCR: "WS-C2960S-48TS-L"
+PID: WS-C2960S-48TS-L  , VID: V06  , SN: FOC1709X05B
+
+
+SW4#
