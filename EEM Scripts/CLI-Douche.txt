@@ -1,0 +1,13 @@
+#Shuts and no shuts an interface once a minute
+#Sends the "Done being a douchebag... for now!"
+#Following the final command
+
+event manager applet INT_SHUT
+ event timer cron cron-entry "* * * * *"
+ action 0.9 cli command "enable"
+ action 1.0 cli command "config terminal"
+ action 1.1 cli command "interface g0/0"
+ action 1.2 cli command "shut"
+ action 1.3 wait 15
+ action 1.4 cli command "no shut"
+ action 1.5 puts "Done being a douchebag... for now!"
