@@ -1,15 +1,10 @@
 ---
 
- - name: PLAY 1 - GENERATE CONFIGURATIONS
-   hosts: Network-Physical
-   connection: local
-   gather_facts: no
+#tasks:
+# - name: Include Vars
+   #include_vars: group_vars/Network-Physical.yml
 
-   tasks:
-     # - name: Include Vars
-        #include_vars: group_vars/Network-Physical.yml
-
-     - name: GENERATE CONFIGS FOR EACH OS
-       template:
-         src: "templates/Network-Physical.j2"
-         dest: "configs//{{ inventory_hostname }}.cfg"
+- name: GENERATE CONFIGS FOR EACH OS
+  template:
+    src: "templates/Network-Physical.j2"
+    dest: "../configs//{{ inventory_hostname }}.cfg"
