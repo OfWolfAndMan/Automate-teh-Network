@@ -1,0 +1,80 @@
+#Auto-configure port example
+
+---
+
+  - name: AUTO CONFIGURE PORT DESCRIPTIONS
+    hosts: cisco
+    gather_facts: no
+    connection: local
+
+    tasks:
+
+      - name: GET SNMP DISCOVERY INFORMATION
+        snmp_device_version: host={{ inventory_hostname }} community=networktocode version=2c
+        tags:
+          - snmp
+          - neighbors
+
+      - name: GET LLDP NEIGHBORS
+        ntc_show_command:
+          connection=ssh
+          platform={{ ansible_device_vendor }}_{{ ansible_device_os }}
+          template_dir='/home/ntc/library/ntc-ansible/ntc_templates'
+          command='show lldp neighbors'
+          host={{ inventory_hostname }}
+          username={{ un }}
+          password={{ pwd }}
+        register: neighbors
+        tags: neighbors
+
+      - name: CONFIGURE PORT DESCRIPTIONS USING NEIGHBOR DATA
+        nxos_interface:
+          interface={{ item.local_interface  }}
+          description="Connects to {{ item.neighbor_interface }} on {{ item.neighbor }}"
+          host={{ inventory_hostname }}
+          username={{ un }}
+          password={{ pwd}}
+        with_items: neighbors.response
+
+
+#Alternative approach
+
+ ---
+
+ - name: Auto-configure port descriptions
+   hosts: all
+   gather_facts: no
+   connection: local
+
+   tasks:
+     - name: GET SNMP DISCOVERY INFORMATION
+       snmp_device_version: host={{ inventory_hostname }} community=networktocode version=2c
+
+     - name: GET NEIGHBOR INFORMATION
+       ntc_show_command:
+         connection=ssh
+         platform={{ ansible_device_vendor }}_{{ ansible_device_os }}
+         template_dir='./ntc_templates'
+         command='show lldp neighbors'
+         host={{ inventory_hostname }}
+         username={{ un }}
+         password={{ pwd }}
+       register: neighbors
+
+     - name: AUTO-CONFIGURE PORT DESCRIPTIONS FOR ARISTA
+       eos_interface:
+         name={{ item.local_interface }}
+         description="Connects to {{ item.neighbor_interface }} on {{ item.neighbor }}"
+         connection={{ inventory_hostname }}
+       with_items: neighbors.response
+       when: type == "arista"
+
+     - name: AUTO-CONFIGURE PORT DESCRIPTIONS FOR CISCO
+       nxos_interface:
+         interface={{ item.local_interface }}
+         description="Connects to {{ item.neighbor_interface }} on {{ item.neighbor }}"
+         host={{ inventory_hostname }}
+         username={{ un }}
+         password={{ pwd}}
+       with_items: neighbors.response
+       when: type == "cisco"
