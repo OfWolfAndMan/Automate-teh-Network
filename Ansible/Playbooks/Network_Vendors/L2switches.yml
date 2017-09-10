@@ -2,6 +2,8 @@
 
 - name: PLAY 1 - GENERATE CONFIGURATIONS
   hosts: Switches
+  #Use serial when specifying limit of concurrent connections
+  serial: 10
   vars:
     configs: configs
 
