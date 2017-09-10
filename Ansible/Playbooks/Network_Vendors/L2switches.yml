@@ -1,0 +1,8 @@
+---
+
+- name: PLAY 1 - GENERATE CONFIGURATIONS
+  hosts: Network-Physical
+  connection: local
+
+  roles:
+    - management
