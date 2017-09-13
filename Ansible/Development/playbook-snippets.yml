@@ -1,4 +1,6 @@
 ---
+==================================================
+#Copy stdout to a file
 - tasks:
     - raw: "{{ show arp }}"
       register: show
@@ -7,3 +9,36 @@
         copy content={{ show.stdout }}
              dest={{ inventory_hostname }}.arp.txt
       run_once: true #Used to prevent multiple runs if running on localhost but the task falls under multiple host
+
+==================================================
+#Error handling
+- hosts: ios
+  tasks:
+  - ios_command:
+      commands: show version
+      provider: "{{ cli }}"
+    register: result
+  - fail: msg="Wrong Cisco IOS version"
+    when: "not ('Version {{ version }}' in result.stdout[0])"
+
+==================================================
+#Preventing runs when certain variables are not defined
+- name: Generate device configs
+  connection: local
+  tasks:
+  - assert:
+      that:
+        - syslog_host is defined
+        - snmp_host is defined
+      msg: One of the NMS servers is not defined
+
+==================================================
+#
+- hosts: ios
+  tasks:
+  - block:
+      - list of actions
+    rescue:
+      - actions to execute on failure
+    always:
+      - actions to execute at the end no matter what.
