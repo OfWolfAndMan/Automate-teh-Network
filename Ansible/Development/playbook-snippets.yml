@@ -72,3 +72,12 @@
 #Backup - Create backup copy before modification
 #Create - Create a file if it doesn't exist
 
+==================================================
+#Assembling multiple files into an output file
+- assemble:
+    src: directory_path
+    regex: file_matching_pattern (Optional)
+    dest: file_path
+#remote_src: true - Used if source file is on the hose
+
+==================================================
