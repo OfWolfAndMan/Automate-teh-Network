@@ -33,7 +33,7 @@
       msg: One of the NMS servers is not defined
 
 ==================================================
-#
+#Rescue block
 - hosts: ios
   tasks:
   - block:
@@ -42,3 +42,33 @@
       - actions to execute on failure
     always:
       - actions to execute at the end no matter what.
+
+==================================================
+#File management (Relevant to ansible host on localhost)
+- hosts: localhost
+  connection: local
+  tasks:
+  - file: path=version_report.txt state=absent
+  - file: path=version_report.txt state=touch
+  #Additional file options - (file, directory, link, hardlink)
+
+==================================================
+#Adding lines to a text file
+- lineinfile:
+    dest: version_report.txt
+    regexp: "{{ inventory_hostname }}"
+    line: "{{ inventory_hostname }}" has wrong IOS version"
+  when: "not ('Version {{ version }}' in result.stdout[0])"
+
+==================================================
+#Adding blocks to text files
+- blockinfile:
+    dest: results.txt
+    marker: "### { mark } {{ inventory_hostname }}"
+    block: result.stdout[0]
+
+#Marker - Text identifying the begin/end of a block
+#Block - Block content
+#Backup - Create backup copy before modification
+#Create - Create a file if it doesn't exist
+
