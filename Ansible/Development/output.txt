@@ -1,6 +1,133 @@
-interface GigabitEthernet1/0/1
+interface GigabitEthernet1
  description <==Server Port==>
+ switchport mode trunk
+ switchport nonegotiate
 
+interface GigabitEthernet2
+ description <==Server Port==>
  switchport access vlan 30
  switchport mode access
+ spanning-tree portfast
 
+interface GigabitEthernet3
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+
+interface GigabitEthernet4
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+
+interface GigabitEthernet5
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+
+interface GigabitEthernet6
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet7
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet8
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet9
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet10
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet11
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet12
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet13
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet14
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet15
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet16
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet17
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet18
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet19
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
+
+interface GigabitEthernet20
+ description <==Server Port==>
+ switchport access vlan 30
+ switchport mode access
+ spanning-tree portfast
+ switchport voice vlan 20
