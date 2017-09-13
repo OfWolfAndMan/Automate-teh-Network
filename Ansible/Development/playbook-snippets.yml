@@ -1,0 +1,9 @@
+---
+- tasks:
+    - raw: "{{ show arp }}"
+      register: show
+      #Puts output of the show command into the "show variable"
+    - local_action: > #Represents multiline task. Local action denotes it being done on the ansible host
+        copy content={{ show.stdout }}
+             dest={{ inventory_hostname }}.arp.txt
+      run_once: true #Used to prevent multiple runs if running on localhost but the task falls under multiple host
