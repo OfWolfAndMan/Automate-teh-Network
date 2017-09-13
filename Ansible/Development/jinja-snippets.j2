@@ -1,0 +1,65 @@
+'''Snippets per IPSpace class'''
+
+---
+#ACL Example
+acls:
+  noweb:
+    - deny tcp any any eq 80 log
+    - deny tcp any eq 80 any log
+    - permit ip any any
+  noudp:
+    - deny udp any any log
+    - permit tcp any any 
+
+ '''Adds sequence numbers below'''
+
+ {% for name, list in acls.iteritems() %}
+ ip access-list extended {{ name }}
+ {% set count = 0 %}
+ {% for line in list %}
+   {% set count = count + 10 %}
+   {{ count }}{{ line }}
+ {% endfor %}
+
+ =============================================
+
+---
+#Macro example
+loopback: { ip: 172.16.0.1 }
+LAN: { ip: 172.16.10.1 }
+WAN:
+  0: { ip: 172.16.22.2, mask: 255.255.255.240 }
+
+ '''Adds macros below'''
+
+
+ {% macro ifaddr(intf,mask) %}
+   ip address {{ intf.ip }} {{ mask|default(intf.mask)|default('255.255.255.0')}}
+ {% endmacro %}
+
+ interface loopback 0
+ {{ ifaddr(loopback,'255.255.255.255') }}
+ !
+ interface fa0/0
+ {{ ifaddr(LAN) }}
+ !
+ interface serial0/1
+ {{ ifaddr(WAN.0) }}
+
+ =============================================
+
+---
+#Slicing
+hostname: L-1.example.com
+
+hostname {{ hostname }}
+{% set dot = hostname.find('.') %}
+{% if dot > 0 %}
+ip domain name {{ hostname[dot+1:] }}
+  {% set hostname = hostname[:dot] %}
+{% endif %}
+{% set dash = hostname.find('-') %}
+{% if dash > 0 %}
+  {% set idx = hostname[dash:] | int %}
+router bgp {{ 64600 + idx }}
+{% endif %}
