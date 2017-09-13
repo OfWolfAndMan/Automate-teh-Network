@@ -81,3 +81,25 @@
 #remote_src: true - Used if source file is on the hose
 
 ==================================================
+#Summary Report: Configuration changes
+- name: Document changes
+  copy:
+    content: |
+      **************************************************
+      {{ component }} changes on {{ inventory_hostname }}
+      **************************************************
+      {% for line in changes.commands %}
+      {{ line }}
+      {% endfor %}
+    dest: "{{ configures }}/changes/
+           {{ inventory_hostname }}.{{ component }}.changes"
+  delegate_to: localhost
+
+==================================================
+#Simple loop
+- hosts: ios
+  tasks:
+  - name: "Ping targets from IOS devices"
+    ios_command: commands="ping {{ item }}"
+    register: results
+    with_items: "{{ ping_target }}"
