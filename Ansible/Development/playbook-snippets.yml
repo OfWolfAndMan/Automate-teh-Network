@@ -96,10 +96,76 @@
   delegate_to: localhost
 
 ==================================================
-#Simple loop
+#Simple loop for a list
 - hosts: ios
   tasks:
   - name: "Ping targets from IOS devices"
     ios_command: commands="ping {{ item }}"
     register: results
     with_items: "{{ ping_target }}"
+
+==================================================
+#Simple loop for a dict
+- hosts: ios
+  tasks:
+  - name: "Ping targets from IOS devices"
+    ios_command: commands="show standby neigh {{ item.key }}"
+    register: results
+    with_dict: "{{ interfaces }}"
+
+==================================================
+#Loop until a condition is met
+- hosts: ios
+  tasks:
+  - name: "Check interface status"
+    ios_command: commands="show interface dialer 1"
+    register: ifstate
+    until: ifstate.stdout[0].find("protocol is up" ) > 0
+    retries: 5
+    delay: 10
+
+==================================================
+#Select subset of elements from a list
+name: |
+  vlans|selectattr('id','equalto',target_vlan)|
+  map)attribute='name')|first
+
+vlans:
+  - { id: "100", name: "mgmt", subnet: "172.16.21.0/24"}
+  - { id: "101", name: "web", subnet: "192.168.22.0/24"}
+
+==================================================
+#Extract data from text printout
+- ios_command:
+    commands: "show ip interface brief | exclude Interface"
+  register: printout
+- set_fact:
+    intf: |
+      {{ printout.stdout_lines[0] |
+         map('regex_findall','^([A-Za-z]+[0-9./]+)') |
+         map('join') | list }}
+#regex_findall performs regex match and returns a list of matches
+#join within a map merges inner lists into strings
+#map is a generator
+
+==================================================
+#Overwriting the changed flag (In case you don't want)
+#to represent something as "changed" after completion
+- hosts: all
+  tasks:
+  - file: path={{ build_dir }} state=directory
+    run_once: yes
+    changed_when: false
+
+==================================================
+#Check mode for a dry run
+- ios_config:
+    src: "config file.config"
+  register: changes
+- copy:
+    content: |
+      {% for line in changes.commands %}
+      {{ line }}
+      {% endfor %}
+    dest: "destination file.config"
+  check_mode: yes
