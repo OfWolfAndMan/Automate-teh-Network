@@ -164,8 +164,13 @@ vlans:
   register: changes
 - copy:
     content: |
+      {% if ansible_check_mode %}
+      === Running in check mode ===
+      {% endif %}
       {% for line in changes.commands %}
       {{ line }}
       {% endfor %}
     dest: "destination file.config"
   check_mode: yes
+
+==================================================
