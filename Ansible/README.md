@@ -12,7 +12,7 @@ It is important to know the variable precedence to understand how to structure e
 
  -----------------------------------------------------------------------------
  | PRECEDENCE |      VARIABLE NAME      |           COMMON LOCATION          |
- ----------------------------------------------------------------------------|
+ |------------|-------------------------|------------------------------------|
  | 1.         | Inventory Vars          | Inventory file [all:vars]          |
  | 2.         | Inventory Group_Vars    | Inventory file [group:vars]        |
  | 3.         | Inventory Host_Vars     | Inventory file [host:vars]         |
