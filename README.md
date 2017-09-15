@@ -31,6 +31,39 @@ It is important to know the variable precedence to understand how to structure e
  | 16.        | Extra vars              | --extra-vars - adhoc command       |
  -----------------------------------------------------------------------------
 
+**Network Vendors to be supported**
+
+The following is a list of the network vendors that are currently or will be included in the future with these playbooks.
+
+ -----------------------------------
+ |  Vendor/OS      |   Status      |
+ |-----------------|---------------|
+ | Cisco IOS/XE    | Available     |
+ | Cisco IOS-XR    | Not Projected |
+ | Cisco NX-OS     | Projected     |
+ | Arista vEOS     | In Progress   |
+ | Cumulus VX      | In Progress   |
+ | HP (Any)        | Not Projected |
+ | Brocade (Any)   | Unsure        |
+ | Avaya ERS       | Available     |
+ | Avaya VSP       | Projected     |
+ | Junos           | Projected     |
+ | Riverbed RiOS   | Desired       |
+ | Citrix Netscaler| Desired       |
+ -----------------------------------
+
+- Available: A playbook exists
+
+- Not Projected: Nothing completed and nothing planning to be done
+
+- Projected: Plans to be written, but not a current task
+
+- In progress: In a particular stage of development
+
+- Unsure: Thoughts of writing a playbook, but unsure if necessary
+
+- Desired: Little support from the community. Would require extensive efforts on the backend.
+
 **Playbook Examples**
 
 - Template rendering of network configurations
