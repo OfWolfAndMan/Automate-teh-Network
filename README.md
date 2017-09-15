@@ -6,7 +6,7 @@ An array of Ansible playbooks in the making for the benefit of automating all th
 Built in python 2.7, although will be migrated to python 3.6 soon due to nearing EOS state of 2.7.
 
 **Tree Structure**
-
+.
 ├── Development
 │   ├── Inventory
 │   │   ├── Inventory.csv
