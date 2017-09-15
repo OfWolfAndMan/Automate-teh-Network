@@ -5,7 +5,7 @@ An array of Ansible playbooks in the making for the benefit of automating all th
 
 Built in python 2.7, although will be migrated to python 3.6 soon due to nearing EOS state of 2.7.
 
-These playbooks are constructed in a manner that aligns as close to "Best practice" as possible. For more details on Ansible best practice file structure, visit Ansible's website, or view the "playbook-build-example"
+These playbooks are constructed in a manner that aligns as close to "Best practice" as possible. For more details on Ansible best practice file structure, visit Ansible's website, or view the "playbook-build-example" file.
 
 **Variable Precedence**
 
