@@ -1,6 +1,6 @@
 import textfsm
 
-input_file = open("SW4_inventory.txt", encoding='utf-8')
+input_file = open("configs/final-inventory.txt", encoding='utf-8')
 raw_text_data = input_file.read()
 input_file.close()
 
@@ -13,14 +13,20 @@ outfile = outfile_name
 
 print(re_table.header)
 for s in re_table.header:
-	outfile.write("%s," % s)
+	if s == re_table.header[-1]:
+		outfile.write("%s" % s)
+	else:
+		outfile.write("%s," % s)
 outfile.write("\n")
 
 counter = 0
 for row in fsm_results:
 	print(row)
 	for s in row:
-		outfile.write("%s," % s)
+		if s == row[-1]:
+			outfile.write("%s" % s)
+		else:
+			outfile.write("%s," % s)
 	outfile.write("\n")
 	counter += 1
 print("Write %d records" % counter)

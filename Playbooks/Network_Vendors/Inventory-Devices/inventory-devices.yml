@@ -1,0 +1,14 @@
+---
+
+- name: CREATE INVENTORY SHEET BASED ON DEVICE INVENTORY OUTPUT
+  hosts: localhost
+
+  tasks:
+
+    - name: ASSEMBLE ALL CONFIGS
+      assemble:
+         src: "{{ build_dir }}"
+         dest: "{{ config_dir }}/final-inventory.txt"
+
+    - name: PARSE CONFIGS TO CSV FILE
+      shell: "python3 iosparsefsm.py"
