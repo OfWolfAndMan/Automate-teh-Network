@@ -16,5 +16,5 @@
 | 13.        | Role and include vars   | /roles/ and within playbook        |
 | 14.        | Block vars              | Playbook - block module            |
 | 15.        | Task vars               | Defined within playbook            |
-| 16.        | Extra vars              | --extra-vars - adhoc command
+| 16.        | Extra vars              | --extra-vars - adhoc command       |
 -----------------------------------------------------------------------------
