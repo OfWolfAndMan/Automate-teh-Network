@@ -1,0 +1,47 @@
+#NOTE: Putting SSH password inline with vars here [group:vars] requires sshpass to be installed.
+#===============================================================================================
+#INSTALLING ON LINUX (DEBIAN):
+#	apt-get install sshpass -y
+#===============================================================================================
+#INSTALLING ON OS X (Must have Homebrew installed!):
+#	brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
+#===============================================================================================
+
+[all:vars]
+ansible_python_interpreter="/usr/bin/env python"
+
+[avaya]
+SW_Frontend ansible_host=192.168.10.106
+
+[cumulus]
+C-VX-01 ansible_host=10.51.60.57
+C-VX-02 ansible_host=10.51.60.58
+C-VX-03 ansible_host=10.51.60.59
+
+[cumulus:vars]
+ansible_ssh_user=cumulus
+ansible_ssh_pass=CumulusLinux!
+
+[Switches]
+SW1 ansible_host=192.168.10.102
+SW2 ansible_host=192.168.10.103
+SW3 ansible_host=192.168.10.104
+SW4 ansible_host=192.168.10.105
+
+[Routers]
+#R11 ansible_host=192.168.10.111
+CSR1000V1 ansible_host=10.51.60.36
+CSR1000V2 ansible_host=10.51.60.37
+CSR1000V3 ansible_host=10.51.60.38
+CSR1000V4 ansible_host=10.51.60.39
+CSR1000V5 ansible_host=10.51.60.40
+CSR1000V6 ansible_host=10.51.60.41
+CSR1000V7 ansible_host=10.51.60.42
+CSR1000V8 ansible_host=10.51.60.43
+CSR1000V9 ansible_host=10.51.60.44
+CSR1000V10 ansible_host=10.51.60.45
+
+[Network-Physical:children]
+Switches
+Routers
+
