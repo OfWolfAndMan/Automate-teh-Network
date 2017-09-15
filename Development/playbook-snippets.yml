@@ -174,3 +174,12 @@ vlans:
   check_mode: yes
 
 ==================================================
+#Prepopulate SSH known_hosts file
+https://github.com/ipspace/NetOpsWorkshop/tree/master/tools/ssh-keys
+
+==================================================
+#Authorize connection (Enable mode)
+- tasks:
+  - ios_command:
+      commands: show arp
+      authorize: yes

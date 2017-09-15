@@ -1,0 +1,4 @@
+hostname,name,description,productid,vid,serialnumber,
+SW4,1,WS-C2960S-48TS-L,WS-C2960S-48TS-L,V06,FOC1709X05B,
+CSR1000V1,Chassis,Cisco CSR1000V Chassis,CSR1000V,V00,,99JFYCPM051,
+CSR1000V1,module R0,Cisco CSR1000V Route Processor,CSR1000V,V00,,JAB1303001C,
