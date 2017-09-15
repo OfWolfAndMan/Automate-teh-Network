@@ -1,9 +1,9 @@
 -----------------------------------------------------------------------------
 | PRECEDENCE |      VARIABLE NAME      |           COMMON LOCATION          |
 ----------------------------------------------------------------------------|
-| 1.         | Inventory Vars          | Inventory file                     |
-| 2.         | Inventory Group_Vars    | Inventory file                     |
-| 3.         | Inventory Host_Vars     | Inventory file                     |
+| 1.         | Inventory Vars          | Inventory file [all:vars]          |
+| 2.         | Inventory Group_Vars    | Inventory file [group:vars]        |
+| 3.         | Inventory Host_Vars     | Inventory file [host:vars]         |
 | 4.         | Playbook All vars       | /vars/                             |
 | 5.         | Playbook Group_Vars     | /group_vars/                       |
 | 6.         | Playbook Host_Vars      | /host_vars/                        |
