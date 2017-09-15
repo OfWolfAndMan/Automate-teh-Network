@@ -1,0 +1,68 @@
+Ansible_Build_Example/
+├── Project-A
+│   ├── ansible.cfg
+│   ├── builds
+│   │   ├── A1-ospf-host-a.build
+│   │   ├── A3-switching-host-a.build
+│   │   └── B2-management-host-a.build
+│   ├── configs
+│   │   └── host-a.cfg
+│   ├── global-task-a.yml
+│   ├── global-task-b.yml
+│   ├── global-task-c.yml
+│   ├── group_vars
+│   │   ├── group-a.yml
+│   │   ├── group-b.yml
+│   │   └── group-c.yml
+│   ├── host_vars
+│   │   ├── host-a.yml
+│   │   ├── host-b.yml
+│   │   └── host-c.yml
+│   ├── hosts
+│   └── roles
+│       ├── defaults
+│       │   └── all.yml
+│       ├── files
+│       │   ├── file-a
+│       │   └── file-b
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   ├── do-that.yml
+│       │   └── do-this.yml
+│       ├── templates
+│       │   ├── template-1.j2
+│       │   └── template-b.j2
+│       └── vars
+│           └── main.yml
+└── Project-B
+    ├── ansible.cfg
+    ├── configs
+    │   └── host-a.cfg
+    ├── global-task-a1.yml
+    ├── global-task-b.yml
+    ├── group_vars
+    │   ├── group-a.yml
+    │   ├── group-b.yml
+    │   └── group-c.yml
+    ├── host_vars
+    │   ├── host-a.yml
+    │   ├── host-b.yml
+    │   └── host-c.yml
+    ├── hosts
+    └── roles
+        ├── defaults
+        │   └── all.yml
+        ├── files
+        │   ├── file-a
+        │   └── file-b
+        ├── handlers
+        │   └── main.yml
+        ├── tasks
+        │   ├── do-that.yml
+        │   └── do-this.yml
+        ├── templates
+        │   ├── template-1.j2
+        │   └── template-b.j2
+        └── vars
+            └── main.yml
