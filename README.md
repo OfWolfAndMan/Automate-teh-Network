@@ -31,7 +31,7 @@ It is important to know the variable precedence to understand how to structure e
  | 16.        | Extra vars              | --extra-vars - adhoc command       |
  -----------------------------------------------------------------------------
 
-**Network Vendors to be supported**
+**Network Vendors support**
 
 The following is a list of the network vendors that are currently or will be included in the future with these playbooks.
 
