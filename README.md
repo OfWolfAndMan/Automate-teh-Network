@@ -10,7 +10,6 @@ Built in python 2.7, although will be migrated to python 3.6 soon due to nearing
 
 It is important to know the variable precedence to understand how to structure each playbook. Below is the precedence as of Ansible 2.3.x
 
- -----------------------------------------------------------------------------
  | PRECEDENCE |      VARIABLE NAME      |           COMMON LOCATION          |
  |------------|-------------------------|------------------------------------|
  | 1.         | Inventory Vars          | Inventory file [all:vars]          |
@@ -29,13 +28,11 @@ It is important to know the variable precedence to understand how to structure e
  | 14.        | Block vars              | Playbook - block module            |
  | 15.        | Task vars               | Defined within playbook            |
  | 16.        | Extra vars              | --extra-vars - adhoc command       |
- -----------------------------------------------------------------------------
 
 **Network Vendors support**
 
 The following is a list of the network vendors that are currently or will be included in the future with these playbooks.
 
- -----------------------------------
  |  Vendor/OS      |   Status      |
  |-----------------|---------------|
  | Cisco IOS/XE    | Available     |
@@ -50,7 +47,6 @@ The following is a list of the network vendors that are currently or will be inc
  | Junos           | Projected     |
  | Riverbed RiOS   | Desired       |
  | Citrix Netscaler| Desired       |
- -----------------------------------
 
 - Available: A playbook exists
 
