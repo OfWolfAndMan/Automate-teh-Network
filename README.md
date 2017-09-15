@@ -5,6 +5,84 @@ An array of Ansible playbooks in the making for the benefit of automating all th
 
 Built in python 2.7, although will be migrated to python 3.6 soon due to nearing EOS state of 2.7.
 
+**Tree Structure**
+
+├── Development
+│   ├── Inventory
+│   │   ├── Inventory.csv
+│   │   ├── SW4_inventory.txt
+│   │   └── inventory_switches.textfsm
+│   ├── L2int.j2
+│   ├── change_hostname.yaml
+│   ├── configtemplatingjinja.py
+│   ├── iosparsefsm.py
+│   ├── jinja-snippets.j2
+│   ├── output.txt
+│   ├── playbook-snippets.yml
+│   ├── snippets.txt
+├── Playbooks
+│   ├── Linux
+│   │   ├── PostGRE-Tables.yml
+│   │   ├── ansible.cfg
+│   │   ├── files
+│   │   │   └── NetworkTables.sql
+│   │   ├── group_vars
+│   │   │   └── rpi.yml
+│   │   ├── host_vars
+│   │   ├── hosts
+│   │   ├── implement_quagga.yml
+│   │   ├── roles
+│   │   │   └── nginx
+│   │   │       ├── files
+│   │   │       │   ├── generatetls.sh
+│   │   │       │   ├── nginx.conf
+│   │   │       │   ├── nginx.crt
+│   │   │       │   └── nginx.key
+│   │   │       └── templates
+│   │   │           ├── index.html.j2
+│   │   │           └── nginx.conf.j2
+│   │   ├── update_packages.yml
+│   │   ├── web-notls.yml
+│   │   └── web-tls.yml
+│   └── Network_Vendors
+│       ├── CSRinterfaces.sql
+│       ├── L2switches.yml
+│       ├── ansible.cfg
+│       ├── avaya-test.yml
+│       ├── breakconfig.yml
+│       ├── configs
+│       │   ├── management-SW1.cfg
+│       │   ├── management-SW2.cfg
+│       │   ├── management-SW3.cfg
+│       │   └── management-SW4.cfg
+│       ├── group_vars
+│       │   ├── Network-Physical.yml
+│       │   ├── Routers.yml
+│       │   ├── Switches.yml
+│       │   └── all.yml
+│       ├── host_vars
+│       │   └── SW4.yml
+│       ├── hosts
+│       ├── ntc-test.yml
+│       ├── roles
+│       │   └── management
+│       │       ├── defaults
+│       │       ├── files
+│       │       ├── handlers
+│       │       ├── tasks
+│       │       │   └── main.yml
+│       │       ├── templates
+│       │       │   ├── Network-Physical.j2
+│       │       │   ├── aaa.j2
+│       │       │   ├── snmp.j2
+│       │       │   └── ssh.j2
+│       │       └── vars
+│       │           └── main.yml
+│       ├── show_output.yml
+│       ├── snmp_facts.yml
+│       └── templates
+├── ansible-requirements.txt
+└── install-environment.sh
 
 **Variable Precedence**
 
