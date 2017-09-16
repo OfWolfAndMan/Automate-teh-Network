@@ -2,7 +2,7 @@ Value Filldown hostname (\S+)
 Value name (.+)
 Value description (.*)
 Value productid (\S*)
-Value vid (\S*)
+Value vid (\S{3})
 Value Required serialnumber (\S+)
 
 Start
