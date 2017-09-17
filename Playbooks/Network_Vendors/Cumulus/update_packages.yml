@@ -1,5 +1,4 @@
 - hosts: cumulus
-  #transport: paramiko
   #gather_facts: True
   remote_user: cumulus
 
@@ -12,8 +11,6 @@
         - apt-get dist-upgrade -y
         - apt-get autoremove -y
       become: true
-      #become_method: sudo
-      #become_user: root
 
     - name: Reboot server (Required for Cumulus after update)
       raw: /sbin/shutdown -r +1
@@ -21,5 +18,3 @@
       poll: 0
       ignore_errors: true
       become: true
-      #become_method: sudo
-      #become_user: root

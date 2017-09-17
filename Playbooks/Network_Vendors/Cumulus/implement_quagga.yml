@@ -5,6 +5,23 @@
   #vars:
 
   tasks:
+    - name: Verify if Quagga daemon is configured
+      command: cat /etc/quagga/daemons
+      register: daemons
+      become: true
+    - name: Boot user from task if already enabled
+      assert:
+        that:
+          "'ospfd=yes' not in daemons.stdout and 'bgpd=yes' not in daemons.stdout"
+        msg: "The OSPF nor BGP processes already appear to be enabled. Canceling task..."
+    - name: Verify quagga operation
+      command: bash -c systemctl | grep quagga
+      register: service
+    - name: Stop Quagga daemon if needed
+      command: systemctl stop quagga.service
+      become: true
+      when: "'quagga' not in service.stdout"
+
     - name: Change Quagga daemon parameters
       command: "{{ item }}"
       with_items:
@@ -13,8 +30,6 @@
         - sed -i 's/bgpd=no/bgpd=yes/g' /etc/quagga/daemons
         - sed -i 's/pimd=no/pimd=yes/g' /etc/quagga/daemons
       become: true
-      become_method: sudo
-      become_user: root
 
     - name: Start the Quagga daemon
       command: "{{ item }}"
@@ -22,7 +37,5 @@
         - systemctl enable quagga.service
         - systemctl start quagga.service
       become: true
-      become_method: sudo
-      become_user: root
 
      
