@@ -1,0 +1,23 @@
+- hosts: cumulus
+  #transport: paramiko
+  #gather_facts: True
+  remote_user: cumulus
+
+  tasks:
+    - name: Update package cache and upgrade packages
+      raw: "{{ item }}"
+      with_items:
+        - apt-get update
+        - apt-get upgrade -y
+      become: true
+      #become_method: sudo
+      #become_user: root
+
+    - name: Reboot server (Required for Cumulus after update)
+      raw: /sbin/shutdown -r +1
+      async: 0
+      poll: 0
+      ignore_errors: true
+      become: true
+      #become_method: sudo
+      #become_user: root

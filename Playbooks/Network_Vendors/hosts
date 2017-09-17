@@ -8,15 +8,15 @@
 #===============================================================================================
 
 [all:vars]
-ansible_python_interpreter="/usr/bin/env python"
+ansible_python_interpreter="/usr/bin/env python2"
 
 [avaya]
 SW_Frontend ansible_host=192.168.10.106
 
 [cumulus]
-C-VX-01 ansible_host=10.51.60.57
-C-VX-02 ansible_host=10.51.60.58
-C-VX-03 ansible_host=10.51.60.59
+C-VX-01 ansible_host=10.51.60.52
+C-VX-02 ansible_host=10.51.60.53
+C-VX-03 ansible_host=10.51.60.54
 
 [cumulus:vars]
 ansible_ssh_user=cumulus
