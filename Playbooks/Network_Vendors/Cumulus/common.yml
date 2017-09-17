@@ -3,11 +3,10 @@
   remote_user: cumulus
 
   tasks:
-
   - name: Capture current hostname
     command: cat /etc/hostname
     register: entry
-
+  #Configure hostname if not present
   - name: Configure basic parameters on the Cumulus box
     lineinfile: dest=/etc/hostname
                 regexp='^'
@@ -19,7 +18,7 @@
   - name: Verify localhost DNS entry exists
     command: cat /etc/hosts
     register: entry
-
+  #Append local DNS entry for self if not present
   - name: Configure localhost name when doesn't exists
     lineinfile: dest=/etc/hosts
                 regexp='^'
@@ -27,3 +26,11 @@
                 state=present
     when: "'localhost inventory_hostname' not in entry.stdout"
     become: true
+    register: result
+    notify: Restart Cumulus
+  
+  handlers:
+    - name: Restart Cumulus
+      command: /sbin/shutdown -r +1
+      become: true
+      when: result|changed
