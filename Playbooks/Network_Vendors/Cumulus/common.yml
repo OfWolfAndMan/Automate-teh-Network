@@ -1,0 +1,29 @@
+- hosts: cumulus
+  #gather_facts: True
+  remote_user: cumulus
+
+  tasks:
+
+  - name: Capture current hostname
+    command: cat /etc/hostname
+    register: entry
+
+  - name: Configure basic parameters on the Cumulus box
+    lineinfile: dest=/etc/hostname
+                regexp='^'
+                line='{{ inventory_hostname }}'
+                state=present
+    when: "'inventory_hostname' not in entry.stdout" 
+    become: true
+
+  - name: Verify localhost DNS entry exists
+    command: cat /etc/hosts
+    register: entry
+
+  - name: Configure localhost name when doesn't exists
+    lineinfile: dest=/etc/hosts
+                regexp='^'
+                line='localhost {{ inventory_hostname }}'
+                state=present
+    when: "'localhost inventory_hostname' not in entry.stdout"
+    become: true
