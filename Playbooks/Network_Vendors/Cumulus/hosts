@@ -18,5 +18,5 @@ C-VX-03 ansible_host=10.51.60.54
 [cumulus:vars]
 ansible_ssh_user=cumulus
 ansible_ssh_pass=CumulusLinux!
-
+ansible_become_pass=CumulusLinux!
 
