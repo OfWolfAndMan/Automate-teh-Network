@@ -1,0 +1,42 @@
+*   Trying 151.101.24.133...
+* TCP_NODELAY set
+* Connected to raw.githubusercontent.com (151.101.24.133) port 443 (#0)
+* TLS 1.2 connection using TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+* Server certificate: www.github.com
+* Server certificate: DigiCert SHA2 High Assurance Server CA
+* Server certificate: DigiCert High Assurance EV Root CA
+> GET /StevenBlack/hosts/master/alternates/fakenews/hosts HTTP/1.1
+> Host: raw.githubusercontent.com
+> User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0
+> Accept: */*
+> Referer: 
+> 
+< HTTP/1.1 200 OK
+< Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'
+< Strict-Transport-Security: max-age=31536000
+< X-Content-Type-Options: nosniff
+< X-Frame-Options: deny
+< X-XSS-Protection: 1; mode=block
+< ETag: "bce0a1cfe59f52d891babaefeeb72ffe1ac5e3e5"
+< Content-Type: text/plain; charset=utf-8
+< Cache-Control: max-age=300
+< X-Geo-Block-List:
+< X-GitHub-Request-Id: 3582:2F967:3A6E785:3EBBA58:59C1BF08
+< Content-Length: 1183891
+< Accept-Ranges: bytes
+< Date: Wed, 20 Sep 2017 01:06:16 GMT
+< Via: 1.1 varnish
+< Connection: keep-alive
+< X-Served-By: cache-lax8644-LAX
+< X-Cache: MISS
+< X-Cache-Hits: 0
+< X-Timer: S1505869576.498318,VS0,VE328
+< Vary: Authorization,Accept-Encoding
+< Access-Control-Allow-Origin: *
+< X-Fastly-Request-ID: a84ed3b68db40992b67824833a9bd7fd04ffeb7a
+< Expires: Wed, 20 Sep 2017 01:11:16 GMT
+< Source-Age: 0
+< 
+{ [1922 bytes data]
+                                                                           0.2%#                                                                          2.7%#####                                                                      8.2%#################                                                         24.8%#####################################                                     52.4%######################################################################    98.1%######################################################################## 100.0%* Connection #0 to host raw.githubusercontent.com left intact
+
