@@ -1,0 +1,29 @@
+---
+
+
+- name: Create directory for backups
+  file:
+    path: backup
+    state: directory
+    mode: 0755
+  delegate_to: localhost
+
+- name: fetch ports.conf
+  fetch: dest=backup/{{ inventory_hostname }}/ports.conf src=/etc/cumulus/ports.conf flat=yes
+  when: "'cumulus' in group_names"
+  become: true
+
+- name: fetch interfaces
+  fetch: dest=backup/{{ inventory_hostname }}/interfaces src=/etc/network/interfaces flat=yes
+  when: "'cumulus' in group_names"
+  become: true
+    
+- name: copy quagga daemons file
+  fetch: dest=backup/{{ inventory_hostname }}/daemons src=/etc/quagga/daemons flat=yes
+  when: "'cumulus' in group_names"
+  become: true
+    
+- name: copy Quagga.conf
+  fetch: dest=backup/{{ inventory_hostname }}/Quagga.conf src=/etc/quagga/Quagga.conf flat=yes
+  when: "'cumulus' in group_names"
+  become: true

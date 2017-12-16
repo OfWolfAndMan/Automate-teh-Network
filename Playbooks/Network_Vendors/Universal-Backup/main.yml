@@ -1,0 +1,26 @@
+---
+- name: Device Backup Script
+  hosts: all
+  vars:
+    provider_nxos:
+      host: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      transport: nxapi
+      use_ssl: no
+      validate_certs:  false
+    provider_ios:
+      host: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+    provider_eos:
+      host: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      authorize: true
+#    ansible_python_interpreter: python
+  roles:
+    #- nxosbackup
+    - iosbackup
+    - eosbackup
+    - cumulusbackup
