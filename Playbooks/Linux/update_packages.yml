@@ -1,0 +1,23 @@
+- hosts: Linux
+  gather_facts: True
+  become: True
+
+  tasks:
+    - name: Update package cache
+      package:
+        update_cache: yes
+        cache_valid_time: 3600
+    - name: Upgrade packages
+      command: apt-get upgrade -y
+      register: upgrade_result
+      changed_when: "'0 upgraded' not in  upgrade_result.stdout"
+    - name: Update all packages to latest version
+      package:
+        upgrade: dist
+      register: distupgrade_result
+      changed_when: "'0 upgraded' not in distupgrade_result.stdout"
+    - name: Remove dependencies no longer needed
+      command: apt-get autoremove -y
+      register: autoremove_result
+      changed_when: "'0 to remove' not in autoremove_result.stdout"
+
