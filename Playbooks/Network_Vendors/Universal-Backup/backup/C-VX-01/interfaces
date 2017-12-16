@@ -1,0 +1,27 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*.intf
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet static
+    address 10.51.60.52/27
+    gateway 10.51.60.33
+
+auto bridge
+iface bridge
+    bridge-vlan-aware yes
+    bridge-vids 13,23
+
+auto swp3
+iface swp3
+    address 10.1.13.1/24
+
+auto swp2
+iface swp2
+    address 10.1.12.1/24

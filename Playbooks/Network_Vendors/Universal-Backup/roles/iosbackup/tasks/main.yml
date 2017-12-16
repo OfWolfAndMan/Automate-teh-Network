@@ -1,0 +1,43 @@
+---
+# tasks file for iosbackup
+  - name: backup IOS devices
+    connection: local
+    ios_config:
+      provider: "{{ provider_ios }}"
+      backup: yes
+    when: "'ios' in group_names"
+    register: backupfile
+
+  - block:
+    - name: "Define path"
+      set_fact:
+        new_backup_dir: "backup/{{ inventory_hostname }}"
+      delegate_to: localhost
+    - name: "Checking folders"
+      stat:
+        path: "{{ new_backup_dir }}"
+      register: folder_stats
+      delegate_to: localhost
+    - name: "Print folder_stats"
+      debug:
+        var: folder_stats
+    - name: Create folder without overwriting existing data"
+      file:
+        path: "{{ new_backup_dir }}"
+        state: directory
+        mode: 0755
+      when: folder_stats.stat.exists == false
+      delegate_to: localhost
+    when: "'ios' in group_names"
+
+  - name: Move configs to top directory
+    command: "mv {{ backupfile.backup_path }} {{ new_backup_dir }}/{{ inventory_hostname }}.cfg"
+    delegate_to: localhost
+    when: "'ios' in group_names"
+
+  - name: Cleanup remaining orphan folder
+    file:
+      path: "{{ role_path }}/backup"
+      state: absent
+    delegate_to: localhost
+    when: "'ios' in group_names"

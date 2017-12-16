@@ -1,0 +1,8 @@
+---
+# tasks file for nxosbackup
+  - name: backup NXOS devices
+    hosts: nxos
+    nxos_config:
+      provider: "{{ provider_nxos }}"
+      backup: yes
+    when: "'nxos' in group_names"
