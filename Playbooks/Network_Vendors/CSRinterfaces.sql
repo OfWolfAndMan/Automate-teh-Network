@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: network_interfaces; Type: TABLE; Schema: public; Owner: awathen
+-- Name: network_interfaces; Type: TABLE; Schema: public; Owner: ofwolfandman
 --
 
 CREATE TABLE network_interfaces (
@@ -36,7 +36,7 @@ CREATE TABLE network_interfaces (
 ALTER TABLE network_interfaces OWNER TO postgresql;
 
 --
--- Data for Name: network_interfaces; Type: TABLE DATA; Schema: public; Owner: awathen
+-- Data for Name: network_interfaces; Type: TABLE DATA; Schema: public; Owner: ofwolfandman
 --
 
 COPY network_interfaces (hostname, interface, ip_address, protocol_status, status) FROM stdin;
