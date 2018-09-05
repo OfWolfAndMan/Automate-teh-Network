@@ -1,0 +1,31 @@
+                Make Changes to Repo
+                        ||
+                        ||
+                        \/
+                Send Pull Request
+                        ||
+                        ||
+                        \/
+                Send PR Notify to Trigger CI
+                        ||
+                        ||
+                        \/
+                CI Server Runs Tests
+                        ||
+                        ||
+                        \/
+                CI Server stores results and sends notifications
+                        ||
+                        ||
+                        \/
+                Based on preset logic, CI server may advise against deploying to production
+                        ||
+                        ||
+                        \/
+Repository admin approves or denies the pull Request
+        ||                                      ||
+      DENIED                                 APPROVED
+        ||                                      ||
+        \/                                      \/
+The engineer must rework his update     PR is merged and, release tagged,
+                                        and update is pushed to production
