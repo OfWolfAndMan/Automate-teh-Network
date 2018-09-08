@@ -1,10 +1,11 @@
 pipeline {
   agent any
   stages {
-    stage('My_Stage') {
+    stage('Pre-Checks') {
       steps {
         sh '''myshell.sh
 '''
+        sleep 60
       }
     }
   }
