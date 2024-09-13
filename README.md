@@ -7,6 +7,10 @@ Built in python 2.7, although will be migrated to python 3.6 soon due to nearing
 
 These playbooks are constructed in a manner that aligns as close to "Best practice" as possible. For more details on Ansible best practice file structure, visit Ansible's website, or view the "playbook-build-example" file.
 
+**Environment variables**
+The following should be set in your environment file (i.e. .bashrc) to ensure proper usage:
+- NETWORK_DOMAIN_NAME
+
 **Variable Precedence**
 
 It is important to know the variable precedence to understand how to structure each playbook. Below is the precedence as of Ansible 2.3.x
