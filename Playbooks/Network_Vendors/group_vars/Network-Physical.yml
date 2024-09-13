@@ -61,7 +61,7 @@ domain:
   name_servers:
     - ip: 10.98.44.19
     - ip: 10.98.45.25
-  name: yo-momma.likes-cheesy-bread.net
+  name: $NETWORK_DOMAIN_NAME # Uses the .bashrc env var
 
 ntp:
   servers:
