@@ -261,8 +261,17 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict, prose: bo
                   lineno: int = 0) -> str:
     if line.lstrip().startswith(COMMENT_PREFIXES):
         return line
+    # Device-CLI patterns and YAML-field patterns belong to different languages. Running the
+    # CLI patterns over YAML turns task names like "Generate the key and self-signed
+    # certificate" into placeholders; running the YAML patterns over a .cfg file catches
+    # nothing at all. Split by file type rather than by hoping the regexes never collide.
+    is_yaml = relpath.lower().endswith((".yml", ".yaml"))
     out = line
     for name, rx in SECRET_PATTERNS:
+        if is_yaml and name.startswith("cisco_"):
+            continue
+        if not is_yaml and name.startswith(("yaml_", "ansible_")):
+            continue
         def sub(m, name=name):
             raw = m.group(0)
             if "{" in raw or "}" in raw:       # a Jinja expression is never a literal
@@ -499,17 +508,18 @@ def self_test() -> int:
         print(f"{v6:24s} -> {got:26s} {'ok' if got == want else 'FAIL want ' + want}")
         ok &= got == want
 
-    for name, line, must in [
-        ("enable secret", "enable secret SAMPLE-value-one", "LAB-ONLY"),
-        ("username", "username sampleuser secret SAMPLE-value-two", "LAB-ONLY"),
-        ("vty password", " password SAMPLE-value-three", "LAB-ONLY"),
-        ("tacacs key", " key SAMPLE-value-four", "LAB-ONLY"),
-        ("yaml pw", "  password: SAMPLE-value-five", "LAB-ONLY"),
-        ("yaml key", "      key: SAMPLE-value-six", "LAB-ONLY"),
+    for name, line, relpath, must in [
+        ("enable secret", "enable secret SAMPLE-value-one", "dev.cfg", "LAB-ONLY"),
+        ("username", "username sampleuser secret SAMPLE-value-two", "dev.cfg", "LAB-ONLY"),
+        ("vty password", " password SAMPLE-value-three", "dev.cfg", "LAB-ONLY"),
+        ("tacacs key", " key SAMPLE-value-four", "dev.cfg", "LAB-ONLY"),
+        ("yaml pw", "  password: SAMPLE-value-five", "vars.yml", "LAB-ONLY"),
+        ("yaml key", "      key: SAMPLE-value-six", "vars.yml", "LAB-ONLY"),
+        ("prose is not rewritten", "   - name: Generate the key and certificate", "site.yml", "Generate the key and certificate"),
     ]:
-        out = scrub_secrets(line, "f", {}, {}).strip()
+        out = scrub_secrets(line, relpath, {}, {}).strip()
         good = must in out
-        print(f"plaintext {name:16s} {out!r} {'ok' if good else 'FAIL'}")
+        print(f"plaintext {name:22s} {out!r} {'ok' if good else 'FAIL'}")
         ok &= good
 
     keep = scrub_secrets(" no snmp-server community public", "f", {}, {}).strip()
