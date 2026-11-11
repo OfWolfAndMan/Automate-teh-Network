@@ -1,0 +1,38 @@
+---
+# Containerlab topology for the fabric the network playbooks target.
+# Deploy: make lab-up   (requires the images listed in lab/README.md)
+name: ateh-lab
+
+mgmt:
+  network: ateh-mgmt
+  ipv4-subnet: 10.0.99.0/24
+
+topology:
+  nodes:
+    eos1:
+      kind: arista_ceos
+      image: ceos:4.31.2F
+      mgmt-ipv4: 10.0.99.11
+    eos2:
+      kind: arista_ceos
+      image: ceos:4.31.2F
+      mgmt-ipv4: 10.0.99.12
+    rr1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.0.2
+      mgmt-ipv4: 10.0.99.21
+      binds:
+        - lab/frr/daemons:/etc/frr/daemons
+        - lab/frr/frr.conf:/etc/frr/frr.conf
+    rr2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.0.2
+      mgmt-ipv4: 10.0.99.22
+      binds:
+        - lab/frr/daemons:/etc/frr/daemons
+        - lab/frr/frr.conf:/etc/frr/frr.conf
+
+  links:
+    - endpoints: ["eos1:eth1", "rr1:eth1"]
+    - endpoints: ["eos2:eth1", "rr2:eth1"]
+    - endpoints: ["rr1:eth2", "rr2:eth2"]

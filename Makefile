@@ -3,7 +3,7 @@
 
 PY ?= python3
 
-.PHONY: help setup inventory preflight lint syntax scrub test
+.PHONY: help setup inventory preflight lint syntax scrub test e2e-linux e2e-network lab-up lab-down index index-check
 
 help:
 	@printf '%-12s %s\n' \
@@ -34,8 +34,29 @@ lint: syntax
 	yamllint -f parsable -c .yamllint.yml .
 	ansible-lint playbooks/ || true
 
+e2e-linux:
+	bash scripts/e2e_linux.sh
+
+e2e-network:
+	bash scripts/e2e_network.sh
+
+lab-up:
+	containerlab deploy -t lab/network.clab.yml
+
+lab-down:
+	containerlab destroy -t lab/network.clab.yml --cleanup
+
+index:
+	$(PY) tools/gen_index.py --write
+
+index-check:
+	$(PY) tools/gen_index.py --check
+
 scrub:
 	$(PY) tools/shield/sanitize.py --check .
 
-test: scrub inventory syntax
+test: scrub inventory syntax index-check
 	@echo "harness ok"
+
+full: test e2e-linux
+	@echo "harness + lab layer 1 ok"
