@@ -3,7 +3,9 @@ name: ci
 
 on:
   push:
-    branches: [master, "modernize/**"]
+    # `main` is the default branch on the remote; `master` is kept so a rename in either
+    # direction cannot silently disable CI. Checked with `git ls-remote --symref origin HEAD`.
+    branches: [main, master, "modernize/**"]
   pull_request:
 
 permissions:
