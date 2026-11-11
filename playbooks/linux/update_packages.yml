@@ -1,0 +1,31 @@
+---
+# ---
+# title: Update packages
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# ---
+# Successor to Playbooks/Linux/update_packages.yml, which called `apt` directly on hosts
+# whose family it never checked. Idempotent by construction: the package module reports
+# what it changed, and the assert catches the case where a reboot marker appears.
+- name: Update packages
+  hosts: linux
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Update the cache and the installed packages  # noqa: package-latest
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+
+    - name: Report whether a reboot is needed
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_marker
+
+    - name: Say it plainly
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }}: reboot required
+          {{ 'yes' if reboot_marker.stat.exists else 'no' }}

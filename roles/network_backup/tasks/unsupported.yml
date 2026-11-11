@@ -1,0 +1,7 @@
+---
+- name: Refuse to guess at an unsupported platform
+  ansible.builtin.fail:
+    msg: >-
+      {{ inventory_hostname }}: ansible_network_os={{ ansible_network_os }} is not one this
+      role supports (cisco.ios.ios, cisco.nxos.nxos, arista.eos.eos). Add a task file rather
+      than letting a playbook silently skip the host.

@@ -1,0 +1,9 @@
+---
+# NX-OS expresses the same intent in the same shape; only the module changes.
+intended_l3:
+  - name: Ethernet1/1
+    ipv4:
+      - address: 10.0.30.31/24
+  - name: loopback0
+    ipv4:
+      - address: 10.0.255.31/32

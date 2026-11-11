@@ -1,0 +1,10 @@
+---
+# Worked example of declarative intent for the lab. Only hosts that carry intent are
+# configured; every other host reports that it was skipped.
+intended_l3:
+  - name: GigabitEthernet1
+    ipv4:
+      - address: 10.0.10.11/24
+  - name: Loopback0
+    ipv4:
+      - address: 10.0.255.1/32
