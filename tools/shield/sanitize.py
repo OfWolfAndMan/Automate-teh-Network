@@ -225,6 +225,13 @@ SECRET_PATTERNS = [
 ]
 
 BINARY_SKIP = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".bundle"}
+
+# Prose is read, not rewritten. A markdown file that explains the placeholder scheme must be
+# able to quote `enable_secret:` and `155.1.0.0/24` as examples; rewriting them turns the
+# explanation into nonsense, and a scrub that edits documentation is not containment, it is
+# noise. Prose is instead *reported* (see run()), so a real value pasted into a document is
+# still visible in the check output and must be removed by hand.
+PROSE_SUFFIXES = {".md", ".org", ".rst", ".tex", ".adoc"}
 DEFAULT_COMMUNITIES = {"public", "private"}
 COMMENT_PREFIXES = ("#", "--", "<!--")
 DENY_FILE = os.environ.get("SHIELD_DENY_FILE", os.path.expanduser("~/.config/cicero/shield-deny.txt"))
@@ -250,7 +257,8 @@ def scrub_identity(line: str, terms: list[str], stats: dict, mapping: dict) -> s
     return out
 
 
-def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict) -> str:
+def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict, prose: bool = False,
+                  lineno: int = 0) -> str:
     if line.lstrip().startswith(COMMENT_PREFIXES):
         return line
     out = line
@@ -260,11 +268,17 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict) -> str:
             if "{" in raw or "}" in raw:       # a Jinja expression is never a literal
                 return raw
             pre, val = m.group("pre"), m.group("val")
+            bare = val.strip("'\"")
+            if prose:
+                stats["prose_skipped"] = stats.get("prose_skipped", 0) + 1
+                return raw
+            if bare == "":
+                return raw                      # an unset sentinel, not a secret
             if name.startswith("snmp_community") and val.strip("'\"").lower() in DEFAULT_COMMUNITIES:
                 stats["snmp_default_kept"] = stats.get("snmp_default_kept", 0) + 1
                 return raw
-            if val.lower().startswith("lab-only"):
-                return raw
+            if bare.lower().startswith("lab-only"):
+                return raw                      # already a placeholder
             if name == "cisco_standalone_key" and re.fullmatch(r"\d+", val):
                 # a key identifier (`key 1`, `tunnel key 150`) is not a passphrase; rewriting
                 # it produces a command the device rejects
@@ -278,7 +292,13 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict) -> str:
                         or low.endswith((".yml", ".yaml", ".j2", ".cfg", ".sh", ".conf",
                                          ".py", ".txt", ".json", ".pem", ".crt", ".key"))):
                     return raw
-            ctx = f"{name}|{relpath}|{stats.get(name, 0)}"
+            # Context must be stable under file-set and ordering changes: a counter makes
+            # the same line hash differently as soon as another file is added, which is how
+            # an "idempotent" scrub rewrites its own output on the next pass.
+            # Stable under file-set, ordering AND rewrite: path + line + pattern only.
+            # Including the current value would make the replacement depend on itself and
+            # churn the same line forever.
+            ctx = f"{name}|{relpath}|{lineno}"
             if name == "cisco_type5":
                 new = type5_hash(f"{LAB_ONLY}-{ph('t5pass', ctx, 10)}", ph("t5salt", ctx, 8))
             elif name == "cisco_type7":
@@ -293,7 +313,9 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict) -> str:
     return out
 
 
-def scrub_addresses(line: str, alloc: Allocator, stats: dict, mapping: dict) -> str:
+def scrub_addresses(line: str, alloc: Allocator, stats: dict, mapping: dict, prose: bool = False) -> str:
+    if prose:
+        return line
     touched_external = False
 
     def sub(m: re.Match) -> str:
@@ -331,6 +353,32 @@ def scrub_addresses(line: str, alloc: Allocator, stats: dict, mapping: dict) -> 
 
 
 def iter_files(root: Path):
+    """Enumerate files to scan.
+
+    In a git work tree, use git's own view — tracked files plus untracked files that are
+    not ignored — so `collections/`, `.venv/` and an encrypted `vault.yml` are excluded by
+    the same .gitignore that governs publication. Outside git, walk the tree.
+    """
+    try:
+        res = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            capture_output=True, text=True, check=True,
+        )
+        if res.stdout:
+            for rel in res.stdout.split("\0"):
+                if not rel:
+                    continue
+                p = root / rel
+                if not p.is_file() or p.suffix.lower() in BINARY_SKIP:
+                    continue
+                # the scrub's own source carries pattern literals and sample strings
+                if p.name == "sanitize.py" or "tools/shield" in p.parts:
+                    continue
+                yield p
+            return
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+
     for p in sorted(root.rglob("*")):
         if not p.is_file() or ".git" in p.parts or "__pycache__" in p.parts:
             continue
@@ -370,10 +418,12 @@ def run(root: Path, apply: bool, mapping_path: Path) -> int:
         except UnicodeDecodeError:
             continue
         rel = str(p.relative_to(root))
+        prose = p.suffix.lower() in PROSE_SUFFIXES
         new = "".join(
-            scrub_identity(scrub_addresses(scrub_secrets(ln, rel, stats, mapping), alloc, stats, mapping),
-                           deny, stats, mapping)
-            for ln in text.splitlines(keepends=True)
+            scrub_identity(
+                scrub_addresses(scrub_secrets(ln, rel, stats, mapping, prose, i), alloc, stats, mapping, prose),
+                deny, stats, mapping)
+            for i, ln in enumerate(text.splitlines(keepends=True), start=1)
         )
         if new != text:
             changed.append(rel)
