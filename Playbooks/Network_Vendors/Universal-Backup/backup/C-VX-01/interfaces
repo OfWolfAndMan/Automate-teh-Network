@@ -10,8 +10,8 @@ iface lo inet loopback
 # The primary network interface
 auto eth0
 iface eth0 inet static
-    address 10.51.60.52/27
-    gateway 10.51.60.33
+    address 10.0.60.52/27
+    gateway 10.0.60.33
 
 auto bridge
 iface bridge
@@ -20,8 +20,8 @@ iface bridge
 
 auto swp3
 iface swp3
-    address 10.1.13.1/24
+    address 10.0.13.1/24
 
 auto swp2
 iface swp2
-    address 10.1.12.1/24
+    address 10.0.12.1/24

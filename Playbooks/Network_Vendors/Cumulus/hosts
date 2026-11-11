@@ -11,12 +11,12 @@
 ansible_python_interpreter="/usr/bin/env python2"
 
 [cumulus]
-C-VX-01 ansible_host=10.51.60.52
-C-VX-02 ansible_host=10.51.60.53
-C-VX-03 ansible_host=10.51.60.54
+C-VX-01 ansible_host=10.0.60.52
+C-VX-02 ansible_host=10.0.60.53
+C-VX-03 ansible_host=10.0.60.54
 
 [cumulus:vars]
 ansible_ssh_user=cumulus
-ansible_ssh_pass=CumulusLinux!
-ansible_become_pass=CumulusLinux!
+ansible_ssh_pass=LAB-ONLY-a756692b
+ansible_become_pass=LAB-ONLY-4950992a
 

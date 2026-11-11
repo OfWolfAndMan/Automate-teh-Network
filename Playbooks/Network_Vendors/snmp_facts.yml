@@ -1,5 +1,5 @@
 - snmp_facts:
     host: '{{ inventory_hostname }}'
     version: 2c
-    community: 'public'
+    community: 'LAB-ONLY-a062af16'
   delegate_to: local

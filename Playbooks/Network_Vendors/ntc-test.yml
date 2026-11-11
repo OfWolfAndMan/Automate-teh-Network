@@ -20,7 +20,7 @@
     - name: INSERT IP INTERFACES INTO SQL Tables
       #Variables MUST be in quotations!
       shell: >
-        psql -U awathen -c "INSERT INTO network_interfaces VALUES 
+        psql -U devops -c "INSERT INTO network_interfaces VALUES 
         ('{{ inventory_hostname }}', '{{ result.response[0]['intf'] }}', 
         '{{ result.response[0]['ipaddr'] }}', '{{ result.response[0]['proto'] }}', 
         '{{ result.response[0]['status'] }}');"

@@ -5,7 +5,7 @@
 #vault. Even with the "\" escape character, still could not 
 #get it to work properly
 
-ansible_ssh_pass: !vault |
+ansible_ssh_pass: LAB-ONLY-981b920c |
                   $ANSIBLE_VAULT;1.1;AES256
                   37323137373231333130396138356138363435386639383439376434393739383565636565353939
                   3037376330393863383533313761383762396266386435300a363331393939303038313836313962

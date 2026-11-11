@@ -4,16 +4,16 @@ banner:
   entity: Turd Sandwich
 
 console:
-  password: password909
+  password: LAB-ONLY-d2e59078
 
 snmp:
   contact: Joe Schmoe
   location: Yo-Mommas-House
   hosts:
-    - ip: 10.24.92.93
-      community: pianasfoj
-    - ip: 10.24.92.96
-      community: asdbgikai
+    - ip: 10.0.92.93
+      community: LAB-ONLY-e1344bcc
+    - ip: 10.0.92.96
+      community: LAB-ONLY-0cf2ef87
   communities:
     - community: dingleberries
       type: ro
@@ -27,15 +27,15 @@ snmp:
     - trap: cpu
   whitelist_name: SNMP_ACCESS
   whitelist:
-    - network: 10.1.50.0
+    - network: 10.0.50.0
       iverse_mask: 0.0.0.255
       remark: Solarwinds
       clause: permit
-    - network: 172.16.92.0
+    - network: 10.0.92.0
       iverse_mask: 0.0.0.127
       remark: Splunk
       clause: permit
-    - network: 10.10.51.64
+    - network: 10.0.51.64
       iverse_mask: 0.0.0.31
       remark: SNMP_Test
       clause: permit 
@@ -43,32 +43,32 @@ snmp:
 aaa:
   auth_protocol: tacacs
   aaa_servers:
-    - ip: 10.10.10.52
-      key: boringpsk
+    - ip: 10.0.10.52
+      key: LAB-ONLY-fa1ce561
       instance: AAA_MAIN
-    - ip: 10.10.10.62
-      key: randompsk
+    - ip: 10.0.10.62
+      key: LAB-ONLY-c23a77bc
       instance: AAA_SECONDARY
   aaa_group_name: TACACS_SERVER
-  enable_secret: secretpassword
+  enable_secret: LAB-ONLY-323a7cfb
   local_users:
     - user: admin123
-      pass: awesomesauce
+      pass: LAB-ONLY-71a5e56f
     - user: tomatopaste
-      pass: lard4all
+      pass: LAB-ONLY-61d7fdf9
 
 domain:
   name_servers:
-    - ip: 10.98.44.19
-    - ip: 10.98.45.25
+    - ip: 10.0.44.19
+    - ip: 10.0.45.25
   name: $NETWORK_DOMAIN_NAME # Uses the .bashrc env var
 
 ntp:
   servers:
-    - ip: 192.168.24.62
-      psk: boringpsk
-    - ip: 192.168.98.25
-      psk: randompsk
+    - ip: 10.0.24.62
+      psk: LAB-ONLY-638b3c15
+    - ip: 10.0.98.25
+      psk: LAB-ONLY-a3b1f21c
 
 vtp:
   domain: vtpisdead
@@ -76,24 +76,24 @@ vtp:
   
 
 logging: 
-  server: 10.24.91.89
+  server: 10.0.91.89
 
 ssh:
   whitelist_name: SSH_ACCESS
   whitelist:
-    - ip: 10.29.94.29
+    - ip: 10.0.94.29
       remark: Automation Server
       clause: permit
       iverse_mask: 0.0.0.0  
-    - ip: 10.92.0.0
+    - ip: 10.0.0.0
       remark: NOC Support
       clause: permit
       iverse_mask: 0.1.255.255
-    - ip: 192.168.90.64
+    - ip: 10.0.90.64
       remark: VPN Admins
       clause: permit
       iverse_mask: 0.0.0.63 
-  vty_pass: password101
+  vty_pass: LAB-ONLY-18819439
   algorithms: [aes192-ctr, aes256-ctr]
 
 stp:
