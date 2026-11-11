@@ -8,6 +8,9 @@
 collections:
   - name: ansible.netcommon
     version: ">=8.7.1,<9.0.0"
+  # cli_parse lives here as of netcommon 8.x; used directly by playbooks/network/show.yml
+  - name: ansible.utils
+    version: ">=6.1.1,<7.0.0"
   - name: cisco.ios
     version: ">=11.6.0,<12.0.0"
   - name: cisco.nxos
@@ -18,3 +21,6 @@ collections:
     version: ">=2.2.2,<3.0.0"
   - name: community.general
     version: ">=14.0.1,<15.0.0"
+  # needed only by the container-backed linux target in inventories/lab
+  - name: community.docker
+    version: ">=3.10.0,<5.0.0"
