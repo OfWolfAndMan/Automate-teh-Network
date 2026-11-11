@@ -33,8 +33,8 @@ reason, which is the part a future reader cannot recover from a diff.
 
 | Retained | Why |
 |----------|-----|
-| `Playbooks/Network_Vendors/Universal-Backup/backup/**` | the only fixtures this repository has. A backup role without fixtures is a claim without a test (reviewer ruling, 2026-11-11). |
-| `Playbooks/Network_Vendors/configs/management-SW*.cfg` | generated-config fixtures, sanitised, used to exercise parsing and diffing |
+| `tests/fixtures/backups/**` (moved from `Playbooks/Network_Vendors/Universal-Backup/backup/`) | the only fixtures this repository has. A backup role without fixtures is a claim without a test (reviewer ruling, 2026-11-11). |
+| `tests/fixtures/configs/management-SW*.cfg` (moved from `Playbooks/Network_Vendors/configs/`) | generated-config fixtures, sanitised, used to exercise parsing and diffing |
 
 These are data, not code: they are inputs to tests, and they are excluded from the
 "executed or it is not current" rule because they are not instructions to run.
