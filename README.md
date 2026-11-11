@@ -1,3 +1,14 @@
+> **Status (2026-11-11): mid-modernization.** Phase 0 (containment) and Phase 1 (toolchain
+> skeleton) are complete on branch `modernize/phase-0`. The playbooks under `Playbooks/` are
+> still the 2017-2024 originals and do **not** run on current `ansible-core`: 14 of 23 fail
+> `--syntax-check` because their modules left core in the 2.10 collection split. They are being
+> rewritten in Phase 2, not maintained as they stand. The header below is kept for history.
+>
+> New layout: `ansible.cfg`, `requirements.txt` (pinned `ansible-core`), `requirements.yml`
+> (collections), `inventories/lab/`, `playbooks/`, `docs/`, `tools/shield/`. Rules in
+> `CONTRIBUTING.md`; the address and placeholder standard in
+> `docs/addressing-and-placeholder-standard.md`.
+
 # Ansible Playbooks (Linux and Network Vendors)
 ## Version 1.0
 

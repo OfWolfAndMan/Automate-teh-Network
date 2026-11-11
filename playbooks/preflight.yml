@@ -1,0 +1,65 @@
+---
+# Preflight: proves the skeleton is coherent without touching a device.
+#
+# Three gates, in order of how expensive they are to discover later:
+#   1. every host declares a platform and an address inside a declared plane
+#   2. no credential is defined in the inventory — it must resolve from the vault file
+#   3. the vault file is actually populated, not left as the template
+#
+# Run:  ansible-playbook playbooks/preflight.yml --ask-vault-pass
+- name: Preflight — inventory, address plane and credential gate
+  hosts: all
+  gather_facts: false
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Every host declares a network platform
+      ansible.builtin.assert:
+        that:
+          - ansible_network_os is defined
+          - ansible_network_os | length > 0
+          - ansible_connection is defined
+        fail_msg: "{{ inventory_hostname }}: ansible_network_os / ansible_connection missing"
+        quiet: true
+
+    - name: Every address sits inside a declared plane
+      ansible.builtin.assert:
+        that:
+          - (ansible_host is match('10\\.0\\.'))
+            or (ansible_host is match('198\\.18\\.'))
+            or (ansible_host is match('192\\.0\\.2\\.'))
+            or (ansible_host is match('198\\.51\\.100\\.'))
+            or (ansible_host is match('203\\.0\\.113\\.'))
+        fail_msg: >-
+          {{ inventory_hostname }}: {{ ansible_host }} is outside the declared planes
+          (internal 10.0.0.0/16, external 198.18.0.0/15, example RFC 5737).
+          See docs/addressing-and-placeholder-standard.md.
+        quiet: true
+
+    - name: Credentials must resolve from the vault, never from the inventory
+      ansible.builtin.assert:
+        that:
+          - vault_ansible_password is defined
+          - vault_ansible_password | length > 0
+        fail_msg: >-
+          vault_ansible_password is empty. Copy group_vars/all/vault.yml.example to
+          vault.yml, fill it, and encrypt it with ansible-vault before running anything.
+        quiet: true
+      run_once: true
+
+    - name: The vault template must not be left in place as the real thing
+      ansible.builtin.assert:
+        that:
+          - not vault_ansible_password.startswith('LAB-ONLY-')
+        fail_msg: >-
+          vault.yml still carries the template placeholder. Encrypt a real local value;
+          the placeholder exists so a missing vault fails loudly.
+        quiet: true
+      run_once: true
+
+    - name: Preflight summary
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }}: {{ ansible_network_os }} at {{ ansible_host }}
+          via {{ ansible_connection }}

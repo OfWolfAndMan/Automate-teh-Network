@@ -1,0 +1,8 @@
+# Pinned. The corpus this repository replaces targeted Ansible 2.3 on Python 2.7;
+# every module it called left ansible-core in the 2.10 collection split.
+ansible-core==2.22.0
+
+# Optional tooling used by `make lint`. Kept separate from the runtime pin so a
+# lint upgrade never silently changes the ansible-core under test.
+ansible-lint==25.6.1
+yamllint==1.37.1
