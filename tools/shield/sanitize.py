@@ -232,6 +232,14 @@ BINARY_SKIP = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".zip", ".gz", ".bundle"
 # noise. Prose is instead *reported* (see run()), so a real value pasted into a document is
 # still visible in the check output and must be removed by hand.
 PROSE_SUFFIXES = {".md", ".org", ".rst", ".tex", ".adoc"}
+
+# Which patterns apply to which line. File type alone is the wrong discriminator in both
+# directions: a YAML playbook can carry a CLI secret inside a `lines:` block, and a .j2
+# template can emit YAML fields. So the class is decided by file type AND line shape.
+CLI_LINE_RE = re.compile(
+    r"(?:enable|username|interface|ip|ipv6|no|snmp-server|line|ntp|router|key|password|"
+    r"hostname|service|banner|logging|aaa|crypto|tacacs|radius|switchport|vlan|key-string)\b")
+YAML_LINE_RE = re.compile(r"^\s*-?\s*[A-Za-z0-9_.\-]+\s*:\s*\S")
 DEFAULT_COMMUNITIES = {"public", "private"}
 COMMENT_PREFIXES = ("#", "--", "<!--")
 DENY_FILE = os.environ.get("SHIELD_DENY_FILE", os.path.expanduser("~/.config/cicero/shield-deny.txt"))
@@ -265,13 +273,21 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict, prose: bo
     # CLI patterns over YAML turns task names like "Generate the key and self-signed
     # certificate" into placeholders; running the YAML patterns over a .cfg file catches
     # nothing at all. Split by file type rather than by hoping the regexes never collide.
-    is_yaml = relpath.lower().endswith((".yml", ".yaml"))
+    low = relpath.lower()
+    yaml_target = low.endswith((".yml", ".yaml", ".yml.j2", ".yaml.j2"))
+    body = line.lstrip().lstrip("-").lstrip()
+    cli_shape = bool(CLI_LINE_RE.match(body))
+    yaml_shape = bool(YAML_LINE_RE.match(line))
     out = line
     for name, rx in SECRET_PATTERNS:
-        if is_yaml and name.startswith("cisco_"):
-            continue
-        if not is_yaml and name.startswith(("yaml_", "ansible_")):
-            continue
+        if name.startswith("cisco_"):
+            # a CLI verb inside a YAML playbook is still a CLI line
+            if yaml_target and not cli_shape:
+                continue
+        elif name.startswith(("yaml_", "ansible_")):
+            # a template that emits YAML is a YAML target even when named .j2
+            if not (yaml_target or yaml_shape):
+                continue
         def sub(m, name=name):
             raw = m.group(0)
             if "{" in raw or "}" in raw:       # a Jinja expression is never a literal
@@ -301,13 +317,13 @@ def scrub_secrets(line: str, relpath: str, stats: dict, mapping: dict, prose: bo
                         or low.endswith((".yml", ".yaml", ".j2", ".cfg", ".sh", ".conf",
                                          ".py", ".txt", ".json", ".pem", ".crt", ".key"))):
                     return raw
-            # Context must be stable under file-set and ordering changes: a counter makes
-            # the same line hash differently as soon as another file is added, which is how
-            # an "idempotent" scrub rewrites its own output on the next pass.
-            # Stable under file-set, ordering AND rewrite: path + line + pattern only.
-            # Including the current value would make the replacement depend on itself and
-            # churn the same line forever.
-            ctx = f"{name}|{relpath}|{lineno}"
+            # Context is the line itself, with the secret masked out. That is stable under
+            # everything that should not matter — moving the file, adding a file, editing a
+            # different line — and unstable only under what should: the secret changing.
+            # A path-based context rewrites every hash when a file is moved; a value-based
+            # one rewrites the line forever. The masked line avoids both.
+            fingerprint = hashlib.sha256(raw.replace(val, "<SECRET>").encode()).hexdigest()[:16]
+            ctx = f"{name}|{fingerprint}"
             if name == "cisco_type5":
                 new = type5_hash(f"{LAB_ONLY}-{ph('t5pass', ctx, 10)}", ph("t5salt", ctx, 8))
             elif name == "cisco_type7":
@@ -516,6 +532,8 @@ def self_test() -> int:
         ("yaml pw", "  password: SAMPLE-value-five", "vars.yml", "LAB-ONLY"),
         ("yaml key", "      key: SAMPLE-value-six", "vars.yml", "LAB-ONLY"),
         ("prose is not rewritten", "   - name: Generate the key and certificate", "site.yml", "Generate the key and certificate"),
+        ("CLI inside YAML", "      - enable secret SAMPLE-value-seven", "site.yml", "LAB-ONLY"),
+        ("YAML emitted by J2", "  enable_secret: SAMPLE-value-eight", "vars.yml.j2", "LAB-ONLY"),
     ]:
         out = scrub_secrets(line, relpath, {}, {}).strip()
         good = must in out
