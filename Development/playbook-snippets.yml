@@ -131,8 +131,8 @@ name: |
   map)attribute='name')|first
 
 vlans:
-  - { id: "100", name: "mgmt", subnet: "172.16.21.0/24"}
-  - { id: "101", name: "web", subnet: "192.168.22.0/24"}
+  - { id: "100", name: "mgmt", subnet: "10.0.21.0/24"}
+  - { id: "101", name: "web", subnet: "10.0.22.0/24"}
 
 ==================================================
 #Extract data from text printout

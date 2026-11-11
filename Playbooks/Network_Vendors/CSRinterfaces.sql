@@ -40,16 +40,16 @@ ALTER TABLE network_interfaces OWNER TO postgresql;
 --
 
 COPY network_interfaces (hostname, interface, ip_address, protocol_status, status) FROM stdin;
-CSR1000V5	GigabitEthernet2	10.51.60.40	up	up
-CSR1000V1	GigabitEthernet2	10.51.60.36	up	up
-CSR1000V2	GigabitEthernet2	10.51.60.37	up	up
-CSR1000V3	GigabitEthernet2	10.51.60.38	up	up
-CSR1000V6	GigabitEthernet2	10.51.60.41	up	up
-CSR1000V7	GigabitEthernet2	10.51.60.42	up	up
-CSR1000V8	GigabitEthernet2	10.51.60.43	up	up
-CSR1000V9	GigabitEthernet2	10.51.60.44	up	up
-CSR1000V10	GigabitEthernet2	10.51.60.45	up	up
-CSR1000V4	GigabitEthernet2	10.51.60.39	up	up
+CSR1000V5	GigabitEthernet2	10.0.60.40	up	up
+CSR1000V1	GigabitEthernet2	10.0.60.36	up	up
+CSR1000V2	GigabitEthernet2	10.0.60.37	up	up
+CSR1000V3	GigabitEthernet2	10.0.60.38	up	up
+CSR1000V6	GigabitEthernet2	10.0.60.41	up	up
+CSR1000V7	GigabitEthernet2	10.0.60.42	up	up
+CSR1000V8	GigabitEthernet2	10.0.60.43	up	up
+CSR1000V9	GigabitEthernet2	10.0.60.44	up	up
+CSR1000V10	GigabitEthernet2	10.0.60.45	up	up
+CSR1000V4	GigabitEthernet2	10.0.60.39	up	up
 \.
 
 

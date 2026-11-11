@@ -29,9 +29,9 @@ SW_Frontend
 
 [cumulus:vars]
 ansible_user=cumulus
-ansible_password=CumulusLinux!
-ansible_become_pass=CumulusLinux!
+ansible_password=LAB-ONLY-5f070277
+ansible_become_pass=LAB-ONLY-0308e0a8
 
 [avaya_ers:vars]
 ansible_user=therootbridge
-ansible_password=E/YkBmn/Y9B~/\vY
+ansible_password=LAB-ONLY-e2f8c0b1

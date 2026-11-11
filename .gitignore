@@ -1,3 +1,7 @@
 Ansible/Playbooks/Network_Vendors/avaya_test.yml
 EEM Scripts/
 .DS_Store
+
+# Phase 0: TLS material is generated at runtime by generatetls.sh, never committed
+Playbooks/Linux/roles/nginx/files/nginx.key
+Playbooks/Linux/roles/nginx/files/nginx.crt
