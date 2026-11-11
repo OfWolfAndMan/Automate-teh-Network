@@ -1,0 +1,90 @@
+---
+name: ci
+
+on:
+  push:
+    branches: [master, "modernize/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scrub:
+    name: SHIELD scrub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: The scrub's own encoders must round-trip
+        run: python3 tools/shield/sanitize.py --self-test
+      - name: Nothing unpublished may appear in the tree
+        run: python3 tools/shield/sanitize.py --check .
+
+  lint:
+    name: lint and syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned toolchain
+        run: |
+          python -m pip install -q -r requirements.txt
+          ansible-galaxy collection install -r requirements.yml -p ./collections
+      - name: yamllint
+        run: yamllint -f parsable -c .yamllint.yml .
+      - name: syntax-check every playbook
+        run: |
+          set -e
+          for f in playbooks/*/*.yml; do
+            echo "  $f"
+            ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$f" >/dev/null
+          done
+      - name: ansible-lint
+        run: ansible-lint playbooks/ roles/
+
+  e2e-linux:
+    name: lab layer 1 (idempotence)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned toolchain
+        run: |
+          python -m pip install -q -r requirements.txt
+          ansible-galaxy collection install -r requirements.yml -p ./collections
+      - name: Converge a container twice and assert changed=0
+        env:
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
+        run: bash scripts/e2e_linux.sh
+
+  e2e-network:
+    name: lab layer 2 (fabric)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned toolchain
+        run: |
+          python -m pip install -q -r requirements.txt
+          ansible-galaxy collection install -r requirements.yml -p ./collections
+      - name: Deploy the fabric if the images exist
+        env:
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
+        run: |
+          # exit 77 means "substrate absent", which is not a failure and is not a pass either:
+          # it is reported as such so nobody mistakes a skip for a green fabric test.
+          bash scripts/e2e_network.sh || rc=$?
+          if [ "${rc:-0}" = "77" ]; then
+            echo "::notice::fabric images unavailable in CI — layer 2 not exercised"
+            exit 0
+          fi
+          exit "${rc:-0}"
