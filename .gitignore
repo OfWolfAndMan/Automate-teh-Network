@@ -5,3 +5,15 @@ EEM Scripts/
 # Phase 0: TLS material is generated at runtime by generatetls.sh, never committed
 Playbooks/Linux/roles/nginx/files/nginx.key
 Playbooks/Linux/roles/nginx/files/nginx.crt
+
+# Phase 1: toolchain and runtime products
+.venv/
+collections/
+*.retry
+.ansible/
+.inventory_cache/
+
+# Credentials and the scrub's inverse map: the map is the scrub undone
+inventories/*/group_vars/all/vault.yml
+inventories/*/*_vault.yml
+.*-sanitize-map.json

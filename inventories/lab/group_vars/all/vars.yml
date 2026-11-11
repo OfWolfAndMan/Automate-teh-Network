@@ -1,0 +1,13 @@
+---
+# Non-secret defaults. Anything that is a credential belongs in vault.yml, which is
+# encrypted with ansible-vault and never committed in plaintext.
+lab_domain: lab.example.com
+ansible_network_os_override: ""
+
+# Credential variables are referenced, never defined, here. Create the vault file:
+#   cp inventories/lab/group_vars/all/vault.yml.example inventories/lab/group_vars/all/vault.yml
+#   $EDITOR inventories/lab/group_vars/all/vault.yml
+#   ansible-vault encrypt inventories/lab/group_vars/all/vault.yml
+# and run with --ask-vault-pass (or ANSIBLE_VAULT_PASSWORD_FILE).
+vault_ansible_password: ""
+vault_ansible_become_password: ""
