@@ -3,7 +3,8 @@
 # title: Preflight — inventory, address plane and credential gate
 # status: verified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; empty vault fails, template vault fails, encrypted vault passes 7/7
+# verified_env: ansible-core 2.22.0; 7/7 network hosts; empty vault fails, template vault fails, encrypted vault passes
+# note: scoped to `network` — the linux lab target validates connection parameters by running
 # ---
 # Preflight: proves the skeleton is coherent without touching a device.
 #
@@ -13,8 +14,11 @@
 #   3. the vault file is actually populated, not left as the template
 #
 # Run:  ansible-playbook playbooks/preflight.yml --ask-vault-pass
+# Scope is `network`, not `all`: the assertions below are about a network platform and a
+# network address plane, and a container host has neither. Validating the container target
+# is the lab's job (scripts/e2e_linux.sh), which runs it rather than inspecting it.
 - name: Preflight — inventory, address plane and credential gate
-  hosts: all
+  hosts: network
   gather_facts: false
   connection: local
   any_errors_fatal: true
