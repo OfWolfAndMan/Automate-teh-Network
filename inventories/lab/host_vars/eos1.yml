@@ -1,0 +1,10 @@
+---
+# EOS, same shape again. The point of the exercise: one intent document, three vendors,
+# and the module name is the only thing that changes.
+intended_l3:
+  - name: Ethernet1
+    ipv4:
+      - address: 10.0.30.41/24
+  - name: Loopback0
+    ipv4:
+      - address: 10.0.255.41/32

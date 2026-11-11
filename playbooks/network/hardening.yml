@@ -1,0 +1,53 @@
+---
+# ---
+# title: Remove factory-default SNMP communities
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# ---
+# Successor to Playbooks/Network_Vendors/breakconfig.yml, which sent `no snmp-server community
+# public` as free-form lines. Declarative now: the resource module owns the whole SNMP view,
+# so "the default community is absent" is a state to assert, not a command to hope about.
+#
+# The communities here are the factory defaults. They are not secrets — which is exactly why
+# they belong in a hardening task rather than in the scrub's placeholder set.
+- name: Remove factory-default SNMP communities
+  hosts: network
+  gather_facts: false
+
+  vars:
+    default_communities: [public, private]
+
+  tasks:
+    - name: Assert the absence of default communities on IOS
+      when: "'ios' in ansible_network_os"
+      cisco.ios.ios_snmp_server:
+        state: merged
+        config:
+          communities:
+            - name: public
+              state: absent
+            - name: private
+              state: absent
+
+    - name: Assert the absence of default communities on NX-OS
+      when: "'nxos' in ansible_network_os"
+      cisco.nxos.nxos_snmp_server:
+        state: merged
+        config:
+          communities:
+            - name: public
+              state: absent
+            - name: private
+              state: absent
+
+    - name: Assert the absence of default communities on EOS
+      when: "'eos' in ansible_network_os"
+      arista.eos.eos_snmp_server:
+        state: merged
+        config:
+          communities:
+            - name: public
+              state: absent
+            - name: private
+              state: absent

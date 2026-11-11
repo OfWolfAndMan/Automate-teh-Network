@@ -1,0 +1,48 @@
+---
+# ---
+# title: Baseline a Linux host
+# status: verified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0, community.docker, python:3.12-slim
+# note: scripts/e2e_linux.sh: pass1 changed=4, pass2 changed=0
+# note: asserted twice in a container by scripts/e2e_linux.sh
+# ---
+# Baseline convergence for a Linux host. Deliberately free of systemd dependencies so it can
+# be proven inside a container: this is the playbook the Phase 3 harness runs twice and
+# asserts `changed=0` on the second pass.
+- name: Baseline a Linux host
+  hosts: linux
+  become: true
+  gather_facts: true
+
+  vars:
+    baseline_packages:
+      - ca-certificates
+      - curl
+      - tzdata
+    baseline_user: ops
+    baseline_motd: |
+      Managed by ansible. Local edits will be overwritten.
+
+  tasks:
+    - name: Install baseline packages
+      ansible.builtin.package:
+        name: "{{ baseline_packages }}"
+        state: present
+
+    - name: Set the timezone
+      community.general.timezone:
+        name: UTC
+
+    - name: Create the operations account
+      ansible.builtin.user:
+        name: "{{ baseline_user }}"
+        shell: /bin/bash
+        create_home: true
+        state: present
+
+    - name: Deploy the login banner
+      ansible.builtin.copy:
+        content: "{{ baseline_motd }}"
+        dest: /etc/motd
+        mode: "0644"

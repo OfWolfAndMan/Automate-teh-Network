@@ -1,0 +1,46 @@
+---
+# ---
+# title: Gather structured interface facts
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# ---
+# Structured facts rather than screen-scraped text. This replaces the 2017 `ntc_show_command`
+# playbook, whose module lived in an archived role and whose template path pointed at a
+# sibling checkout that no longer exists.
+#
+#   ansible-playbook playbooks/network/facts.yml --ask-vault-pass
+- name: Gather structured interface facts
+  hosts: network
+  gather_facts: false
+
+  tasks:
+    - name: Interfaces as data
+      when: "'ios' in ansible_network_os"
+      cisco.ios.ios_interfaces:
+        state: gathered
+      register: ios_intf
+
+    - name: Interfaces as data
+      when: "'nxos' in ansible_network_os"
+      cisco.nxos.nxos_interfaces:
+        state: gathered
+      register: nxos_intf
+
+    - name: Interfaces as data
+      when: "'eos' in ansible_network_os"
+      arista.eos.eos_interfaces:
+        state: gathered
+      register: eos_intf
+
+    - name: Keep the result as JSON, one file per device
+      ansible.builtin.copy:
+        content: >-
+          {{ (ios_intf.gathered | default(nxos_intf.gathered, true) | default(eos_intf.gathered, true))
+             | to_nice_json }}
+        dest: "{{ playbook_dir }}/../../.artifacts/facts/{{ inventory_hostname }}-interfaces.json"
+        mode: "0640"
+      delegate_to: localhost
+      when: >-
+        (ios_intf.gathered is defined) or (nxos_intf.gathered is defined)
+        or (eos_intf.gathered is defined)

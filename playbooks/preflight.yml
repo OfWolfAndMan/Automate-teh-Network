@@ -1,4 +1,10 @@
 ---
+# ---
+# title: Preflight — inventory, address plane and credential gate
+# status: verified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; empty vault fails, template vault fails, encrypted vault passes 7/7
+# ---
 # Preflight: proves the skeleton is coherent without touching a device.
 #
 # Three gates, in order of how expensive they are to discover later:
@@ -46,7 +52,6 @@
           vault_ansible_password is empty. Copy group_vars/all/vault.yml.example to
           vault.yml, fill it, and encrypt it with ansible-vault before running anything.
         quiet: true
-      run_once: true
 
     - name: The vault template must not be left in place as the real thing
       ansible.builtin.assert:
@@ -56,7 +61,6 @@
           vault.yml still carries the template placeholder. Encrypt a real local value;
           the placeholder exists so a missing vault fails loudly.
         quiet: true
-      run_once: true
 
     - name: Preflight summary
       ansible.builtin.debug:

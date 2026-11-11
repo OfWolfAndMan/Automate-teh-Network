@@ -1,0 +1,18 @@
+---
+# One role for every platform. The 2017 tree had four role trees (ios/eos/nxos/cumulus)
+# whose tasks were identical except for the module name; the platform is already known from
+# `ansible_network_os`, so the duplication was never carrying information.
+#
+# What it does: pull the running configuration to the control node and, separately, the
+# structured facts, so a later diff or compliance check has something to work from.
+galaxy_info:
+  role_name: network_backup
+  author: OfWolfAndMan
+  description: Save running configuration and structured facts for any supported platform
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: GenericUNIX
+      versions: [all]
+  galaxy_tags: [networking, backup]
+dependencies: []

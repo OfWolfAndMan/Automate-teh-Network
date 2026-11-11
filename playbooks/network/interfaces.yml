@@ -1,0 +1,49 @@
+---
+# ---
+# title: Converge L3 interface intent
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# note: intent data supplied in host_vars
+# ---
+# Declarative interface state. The 2017 replacement for this was a Jinja template that
+# rendered a whole configuration and pushed it with `ios_config: lines:` — which is why
+# nothing could be said about whether it had already converged.
+#
+# Intent lives in host_vars (see inventories/lab/host_vars/r1.yml). Hosts without intent
+# are skipped and say so, rather than being silently configured with someone else's data.
+#
+#   ansible-playbook playbooks/network/interfaces.yml --ask-vault-pass
+- name: Converge L3 interface intent
+  hosts: network
+  gather_facts: false
+
+  tasks:
+    - name: Declare IOS L3 interfaces
+      when:
+        - "'ios' in ansible_network_os"
+        - intended_l3 is defined
+      cisco.ios.ios_l3_interfaces:
+        config: "{{ intended_l3 }}"
+        state: replaced
+
+    - name: Declare NX-OS L3 interfaces
+      when:
+        - "'nxos' in ansible_network_os"
+        - intended_l3 is defined
+      cisco.nxos.nxos_l3_interfaces:
+        config: "{{ intended_l3 }}"
+        state: replaced
+
+    - name: Declare EOS L3 interfaces
+      when:
+        - "'eos' in ansible_network_os"
+        - intended_l3 is defined
+      arista.eos.eos_l3_interfaces:
+        config: "{{ intended_l3 }}"
+        state: replaced
+
+    - name: Say so when a host carries no intent
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: no intended_l3 in host_vars, nothing asserted"
+      when: intended_l3 is not defined

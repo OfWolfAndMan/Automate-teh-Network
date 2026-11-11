@@ -1,0 +1,23 @@
+---
+# Dispatch on the platform the inventory already declares, rather than on four parallel
+# role trees that differ only in a module name.
+- name: Resolve the platform task file
+  ansible.builtin.set_fact:
+    _platform_tasks: >-
+      {{ {'cisco.ios.ios': 'ios.yml',
+          'cisco.nxos.nxos': 'nxos.yml',
+          'arista.eos.eos': 'eos.yml'}.get(ansible_network_os, 'unsupported.yml') }}
+
+- name: Ensure the artifact directories exist on the control node
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+  loop:
+    - "{{ network_backup_dir }}"
+    - "{{ network_backup_facts_dir }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Collect from the device
+  ansible.builtin.include_tasks: "{{ _platform_tasks }}"
