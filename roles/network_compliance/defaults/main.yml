@@ -1,0 +1,16 @@
+---
+# Defaults live here, not in play vars, because play vars outrank inventory: an offline
+# inventory that sets network_compliance_collect=false would otherwise be silently ignored and the
+# play would try to back up a fixture. Role defaults are the lowest precedence there is.
+
+# Collect the running configuration with network_backup before evaluating it.
+network_compliance_collect: true
+# Fail every host that violates a policy, after the report is written.
+network_compliance_fail_on_violation: true
+
+network_compliance_root: "{{ role_path }}/../.."
+network_compliance_policy_file: "{{ network_compliance_root }}/policies/compliance.yml"
+network_compliance_schema_file: "{{ network_compliance_root }}/policies/compliance.schema.json"
+network_compliance_config_dir: "{{ network_compliance_root }}/.artifacts/configs"
+network_compliance_config_path: "{{ network_compliance_config_dir }}/{{ inventory_hostname }}.cfg"
+network_compliance_report_dir: "{{ network_compliance_root }}/.artifacts/compliance"

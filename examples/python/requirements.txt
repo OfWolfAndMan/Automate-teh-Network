@@ -1,0 +1,4 @@
+# Only the examples need these; the Ansible toolchain does not. Pinned, like everything else.
+#   python -m pip install -r requirements.txt -r examples/python/requirements.txt
+netmiko==4.8.0
+ntc-templates==9.3.0

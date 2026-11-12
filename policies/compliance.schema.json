@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "policies/compliance.schema.json",
+  "title": "Configuration compliance policies",
+  "description": "The contract for policies/compliance.yml. Replaces the Cerberus validators of the 2019-2021 mini-course. Semantics are documented in docs/compliance.md and plugins/filter/compliance.py.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "description", "platforms", "config"],
+    "properties": {
+      "id": {
+        "description": "Stable, readable identifier. Appears in reports and in the playbook's failure message.",
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+      },
+      "description": {
+        "description": "Why the policy exists, in one sentence.",
+        "type": "string",
+        "minLength": 1
+      },
+      "platforms": {
+        "description": "The last component of ansible_network_os.",
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {"enum": ["ios", "nxos", "eos"]}
+      },
+      "groups": {
+        "description": "Inventory groups the policy applies to. Omit to apply to every host on the platform.",
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {"type": "string", "minLength": 1}
+      },
+      "parent": {
+        "description": "Regex, full-line match, selecting top-level blocks. Omit for a top-level line.",
+        "type": "string",
+        "minLength": 1
+      },
+      "config": {
+        "description": "Regex, full-line match, for the line that must be present or absent.",
+        "type": "string",
+        "minLength": 1
+      },
+      "state": {
+        "enum": ["present", "absent"],
+        "default": "present"
+      }
+    }
+  }
+}

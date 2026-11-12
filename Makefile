@@ -3,7 +3,7 @@
 
 PY ?= python3
 
-.PHONY: help setup inventory preflight lint syntax docs-check scrub test e2e-linux e2e-network lab-up lab-down index index-check
+.PHONY: help setup inventory preflight lint syntax docs-check scrub pytest compliance test full e2e-linux e2e-network lab-up lab-down index index-check
 
 help:
 	@printf '%-12s %s\n' \
@@ -14,10 +14,12 @@ help:
 	  lint      "yamllint + ansible-lint + syntax-check" \
 	  scrub     "SHIELD gate: fail if a credential, address or identifier would publish" \
 	  docs-check "markdown structure of README and docs/" \
+	  pytest    "unit tests: the compliance filter and the examples" \
+	  compliance "the compliance playbook, end to end, against the fixtures" \
 	  test      "the whole harness, in order"
 
 setup:
-	$(PY) -m pip install --quiet -r requirements.txt
+	$(PY) -m pip install --quiet -r requirements.txt -r examples/python/requirements.txt
 	ansible-galaxy collection install -r requirements.yml -p ./collections
 
 inventory:
@@ -27,12 +29,13 @@ preflight:
 	ansible-playbook playbooks/preflight.yml --ask-vault-pass
 
 syntax:
-	@set -e; for f in playbooks/*.yml; do echo "  $$f"; \
+	@set -e; for f in playbooks/*.yml playbooks/*/*.yml; do echo "  $$f"; \
 	  ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$$f" >/dev/null; done; \
 	  echo "  syntax ok"
 
 lint: syntax
 	yamllint -f parsable -c .yamllint.yml .
+	ruff check .
 	ansible-lint playbooks/ || true
 
 e2e-linux:
@@ -56,9 +59,9 @@ index-check:
 docs-check:
 	@if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then \
 	  docker run --rm -v "$(PWD):/w" -w /w node:20-alpine \
-	    npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	    npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md' 'examples/**/*.md'; \
 	elif command -v npx >/dev/null 2>&1; then \
-	  npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	  npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md' 'examples/**/*.md'; \
 	else \
 	  echo "SKIP: neither docker nor npx available"; \
 	fi
@@ -66,7 +69,13 @@ docs-check:
 scrub:
 	$(PY) tools/shield/sanitize.py --check .
 
-test: scrub inventory syntax index-check docs-check
+pytest:
+	$(PY) -m pytest
+
+compliance:
+	bash scripts/e2e_compliance.sh
+
+test: scrub inventory syntax index-check docs-check pytest compliance
 	@echo "harness ok"
 
 full: test e2e-linux

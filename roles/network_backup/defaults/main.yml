@@ -1,6 +1,10 @@
 ---
 # Where artifacts land on the control node. Keep it inside the repo's ignored area so a
 # collected configuration is never committed by accident: these are outputs, not sources.
-network_backup_dir: "{{ playbook_dir }}/../.artifacts/configs"
+#
+# Every playbook lives two levels down (playbooks/<area>/<name>.yml), so the repository
+# root is `playbook_dir/../..`. One `..` resolves to playbooks/.artifacts — still ignored,
+# which is why the mistake was silent, but not the directory the README promises.
+network_backup_dir: "{{ playbook_dir }}/../../.artifacts/configs"
 network_backup_facts: true
-network_backup_facts_dir: "{{ playbook_dir }}/../.artifacts/facts"
+network_backup_facts_dir: "{{ playbook_dir }}/../../.artifacts/facts"

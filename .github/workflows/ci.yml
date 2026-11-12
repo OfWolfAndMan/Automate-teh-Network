@@ -51,13 +51,35 @@ jobs:
             ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$f" >/dev/null
           done
       - name: markdown structure
-        run: npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'
+        run: npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md' 'examples/**/*.md'
 
       - name: ansible-lint
         env:
           # ansible-lint resolves modules through the same path the playbooks use
           ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
         run: ansible-lint playbooks/ roles/
+
+  compliance:
+    name: python tests and compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the pinned toolchain
+        run: |
+          python -m pip install --no-cache-dir --retries 5 --timeout 60 -q -r requirements.txt \
+            -r examples/python/requirements.txt
+          ansible-galaxy collection install -r requirements.yml -p ./collections
+      - name: ruff
+        run: ruff check .
+      - name: pytest
+        run: python -m pytest
+      - name: The compliance playbook against the fixtures
+        env:
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
+        run: bash scripts/e2e_compliance.sh
 
   e2e-linux:
     name: lab layer 1 (idempotence)

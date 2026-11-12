@@ -1,0 +1,48 @@
+---
+# Configuration compliance policies, evaluated by playbooks/network/compliance.yml.
+# Contract: policies/compliance.schema.json. Semantics: docs/compliance.md.
+#
+# Ported from the 2019-2021 Network-Automation-Mini-Course (APIs/config_policies.yml).
+# Two of its policies changed on the way, because the backup fixtures showed them wrong:
+#   - "SSH only VTY" demanded `transport input ssh`, which fails the 14 vty blocks in
+#     tests/fixtures that say `transport input none` — stricter, not weaker.
+#   - "VTP Version 3" asserted a line no fixture carries. The hazard it stood for is a VTP
+#     server overwriting the VLAN database, and the line that answers that is the mode.
+# One was not carried over: "Disable LLDP Globally" on EOS. LLDP is how a fabric verifies its
+# own cabling; turning it off everywhere is not a baseline (docs/retirements.md).
+compliance_policies:
+  - id: ssh-only-vty
+    description: VTY lines accept SSH or nothing, never telnet
+    platforms: [ios]
+    parent: "line vty .*"
+    config: "transport input (ssh|none)"
+
+  - id: ssh-version-2
+    description: SSH version 1 is disabled
+    platforms: [ios]
+    config: "ip ssh version 2"
+
+  - id: no-http-server
+    description: The plaintext HTTP management server is disabled
+    platforms: [ios]
+    config: "no ip http server"
+
+  - id: no-domain-lookup
+    description: A mistyped command is not resolved as a hostname
+    platforms: [ios]
+    # `ip domain-lookup` before IOS 15, `ip domain lookup` after
+    config: "no ip domain[ -]lookup"
+
+  - id: vtp-cannot-overwrite-vlans
+    description: A switch never accepts a VLAN database from a VTP server
+    platforms: [ios]
+    groups: [switches]
+    config: "vtp mode (off|transparent)"
+
+  - id: no-default-snmp-communities
+    description: The factory-default SNMP communities are not configured
+    platforms: [ios, nxos, eos]
+    # `[ ]` rather than a space: tools/shield reads the token after `snmp-server community `
+    # as a community string and would replace the regex with a placeholder.
+    config: "snmp-server community[ ](public|private)( .*)?"
+    state: absent

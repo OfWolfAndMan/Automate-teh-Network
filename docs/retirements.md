@@ -38,3 +38,42 @@ reason, which is the part a future reader cannot recover from a diff.
 
 These are data, not code: they are inputs to tests, and they are excluded from the
 "executed or it is not current" rule because they are not instructions to run.
+
+## Absorbed: Network-Automation-Mini-Course (2019–2021)
+
+A separate repository, the companion code for a video course: a "config compliance
+service" plus the scripts from individual lessons. It was ported here fresh, not merged
+with history, because its history carries hard-coded credentials and addresses outside the
+declared planes, and a merge would publish both again.
+
+As published, its pipeline could not start: `deploy-lab.py` and `destroy-lab.py` import
+`EVE_NG.provisioning` and `EVE_NG.devices`, which were never committed, and `main.py`
+reports on a "verified devices" list nothing in the repository ever populates.
+
+### Carried over
+
+| Course file | Successor | What changed |
+|-------------|-----------|--------------|
+| `main.py`, `shared/resources.py::parse_policy`, `pre-checks.py` | `playbooks/network/compliance.yml`, `roles/network_compliance/`, `plugins/filter/compliance.py` | collection by `network_backup`, not a thread per device joined one at a time; a stdlib parser, not CiscoConfParse v1; a report plus a failed host, not a text file |
+| `APIs/config_policies.yml` | `policies/compliance.yml` | readable `id`s instead of random hex; `transport input ssh` widened to `(ssh\|none)`; VTP v3 restated as `vtp mode (off\|transparent)`; `state: absent` added |
+| `APIs/Schemas/config_policy_validators.yml`, `APIs/validators.py` | `policies/compliance.schema.json` | JSON Schema enforced by `ansible.utils.validate`, not Cerberus |
+| `Classes/objects.py`, `uncategorized/netmiko_async.py` | `examples/python/device.py`, `concurrent_show.py` | no login at import; credentials from the environment; concurrency that is actually concurrent |
+| `shared/regex-prototype.py` | `examples/python/access_ports.py` | one block at a time, named groups; runs against the fixtures |
+| `inventory/inventory_parser.py`, `inventory/config/Sw{1,2}.txt` | `examples/python/show_version_csv.py`, `tests/fixtures/show/` | no run at import; stack members kept; captures sanitised |
+| `shared/resources.py::get_dbentries_postgres` | `examples/python/inventory_db.py` | SQLite, placeholders, an identifier allow-list, and the real Ansible inventory as data |
+
+### Not carried over
+
+| Course file | Reason |
+|-------------|--------|
+| `APIs/app.py`, `APIs/lab_devices.yml`, `Schemas/lab_devices_validators.yml` | a Flask inventory API, run with `debug=True` on `0.0.0.0` — the Werkzeug debugger executes code for anyone who can reach it. Its POST handlers wrote to a different path than they read. `inventories/lab/` is the inventory now. |
+| `EVE_NG/*`, `deploy-lab.py`, `destroy-lab.py`, `tests/test_provisioning.py` | EVE-NG lab provisioning with the default `admin`/`eve` login; `EVE_NG/lab_provisioning.py` ran its whole flow on import. containerlab (`lab/`) is the substrate now. |
+| `configTemplates/**`, `render_templates.py`, `test-render.py`, `tests/test_templates.py` | whole-config Jinja rendering, the pattern this repository retired in Phase 2 (`docs/architecture.md`). `initial.j2` carried a plaintext `enable secret`. Eight of the twelve templates were empty files. |
+| "Disable LLDP Globally" (EOS policy) | LLDP is how a fabric verifies its own cabling. Turning it off everywhere is not a baseline. |
+| `shared/zmq_connect.py`, `message_test.py` | an unfinished request/reply sketch; `pyzmq` was never in `requirements.txt` |
+| `shared/resources.py::send_slack`, `load_api_data`, `thread_update` | a NetBox poller that sent Slack messages, built on `slackclient` (replaced by `slack_sdk` in 2020); it indexed a `requests.Response` as a dict, so it could not have run |
+| `tests/test_main.py` | asserted properties of hard-coded lists and dictionaries; nothing under test |
+| `requirements.txt` | 23 packages, 22 unpinned, about half never imported (jupyterlab, sphinx, nornir, flask_login, psycopg2, …) |
+| `Makefile`, `.flake8`, `.bandit`, `pyproject.toml` | targets wrote into `Logs/` and `compliance/`, which did not exist; `make`, ruff and pytest configuration here replace them |
+| `sample-report-25-08-2019_20:14:00.txt`, `Workflow.png` | output and a diagram of the retired pipeline |
+| `README.md` | described the service above |

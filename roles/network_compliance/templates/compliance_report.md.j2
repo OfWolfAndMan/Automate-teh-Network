@@ -1,0 +1,27 @@
+# Compliance report
+
+{% set hosts = _report | dict2items | sort(attribute='key') %}
+{% set ns = namespace(failing=0) %}
+{% for h in hosts %}{% if h.value | rejectattr('compliant') | list %}{% set ns.failing = ns.failing + 1 %}{% endif %}{% endfor %}
+Policies: `{{ network_compliance_policy_file | relpath(network_compliance_root) }}` ·
+hosts: {{ hosts | length }} · non-compliant: {{ ns.failing }}
+
+| Host | Result | Violations |
+|------|--------|------------|
+{% for h in hosts %}
+{% set bad = h.value | rejectattr('compliant') | list %}
+| `{{ h.key }}` | {{ 'compliant' if not bad else '**%d of %d violated**' | format(bad | length, h.value | length) }} | {{ bad | map(attribute='id') | join(', ') or '—' }} |
+{% endfor %}
+{% for h in hosts %}
+{% set bad = h.value | rejectattr('compliant') | list %}
+{% if bad %}
+
+## {{ h.key }}
+
+| Policy | Detail |
+|--------|--------|
+{% for r in bad %}
+| `{{ r.id }}` — {{ r.description }} | {{ r.detail | replace('|', '\\|') }} |
+{% endfor %}
+{% endif %}
+{% endfor %}
