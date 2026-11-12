@@ -3,7 +3,7 @@
 # title: Baseline a Linux host
 # status: verified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0, community.docker, python:3.12-slim
+# verified_env: ansible-core 2.21.6, community.docker, python:3.12-slim
 # note: scripts/e2e_linux.sh: pass1 changed=4, pass2 changed=0
 # note: asserted twice in a container by scripts/e2e_linux.sh
 # ---

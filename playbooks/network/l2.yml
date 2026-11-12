@@ -3,7 +3,7 @@
 # title: Converge L2 interface intent
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # ---
 # L2 intent, the successor to Playbooks/Network_Vendors/L2switches.yml, which rendered
 # management-SW*.cfg from a Jinja template and pushed the whole file.

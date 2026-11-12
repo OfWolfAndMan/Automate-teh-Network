@@ -3,7 +3,7 @@
 # title: Preflight — inventory, address plane and credential gate
 # status: verified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; 7/7 network hosts; empty vault fails, template vault fails, encrypted vault passes
+# verified_env: ansible-core 2.21.6; 7/7 network hosts; empty vault fails, template vault fails, encrypted vault passes
 # note: scoped to `network` — the linux lab target validates connection parameters by running
 # ---
 # Preflight: proves the skeleton is coherent without touching a device.

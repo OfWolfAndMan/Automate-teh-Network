@@ -3,7 +3,7 @@
 # title: Converge L3 interface intent
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # note: intent data supplied in host_vars
 # ---
 # Declarative interface state. The 2017 replacement for this was a Jinja template that

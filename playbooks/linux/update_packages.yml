@@ -3,7 +3,7 @@
 # title: Update packages
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # ---
 # Successor to Playbooks/Linux/update_packages.yml, which called `apt` directly on hosts
 # whose family it never checked. Idempotent by construction: the package module reports
