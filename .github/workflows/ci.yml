@@ -60,7 +60,7 @@ jobs:
         run: ansible-lint playbooks/ roles/
 
   compliance:
-    name: python tests and compliance
+    name: python tests and offline playbooks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,6 +80,10 @@ jobs:
         env:
           ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
         run: bash scripts/e2e_compliance.sh
+      - name: show.yml against saved captures
+        env:
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
+        run: bash scripts/e2e_show.sh
 
   e2e-linux:
     name: lab layer 1 (idempotence)

@@ -1,10 +1,10 @@
 ---
 # ---
 # title: Run a command and parse it
-# status: unverified
-# verified_on: 2026-11-11
-# verified_env: ansible-core 2.21.6; syntax-check only
-# note: cli_parse lives in ansible.utils as of netcommon 8.x
+# status: partial
+# verified_on: 2026-11-12
+# verified_env: ansible-core 2.21.6; parse + save offline from 2 saved captures — live path unverified
+# note: scripts/e2e_show.sh; cli_parse lives in ansible.utils as of netcommon 8.x
 # ---
 # Read-only command output, parsed into structure — the successor to `ntc_show_command`,
 # which lived in the archived `ntc-ansible` role and pointed its template_dir at a sibling
@@ -14,21 +14,68 @@
 # installed collection rather than by remembering.)
 #
 #   ansible-playbook playbooks/network/show.yml --ask-vault-pass -e 'show_command="show ip interface brief"'
+#
+# Save the structure as JSON, one file per host — the successor to NotLayer3's
+# `runner.py get-cdp-data`, which did this for CDP neighbours only:
+#
+#   ansible-playbook playbooks/network/show.yml --ask-vault-pass \
+#     -e 'show_command="show cdp neighbors detail"' -e show_save=true
+#   # -> .artifacts/parsed/<host>/show_cdp_neighbors_detail.json
+#
+# Parse a capture already on disk instead of asking the device (no login needed):
+#
+#   ansible-playbook -i tests/show/hosts.yml playbooks/network/show.yml \
+#     -e 'show_text_file=tests/fixtures/show/{{ inventory_hostname }}_show_version.txt'
+#
+# Every knob is a `default()` rather than a play var, so an inventory can set it too:
+# play vars outrank inventory, which silently overrode an offline inventory once already.
 - name: Run a command and parse it
   hosts: network
   gather_facts: false
 
-  vars:
-    show_command: "show version"
-
   tasks:
     - name: Run the command and parse the output
       ansible.utils.cli_parse:
-        command: "{{ show_command }}"
+        command: "{{ show_command | default('show version') }}"
         parser:
           name: ansible.netcommon.ntc_templates
-      register: parsed
+      register: _live
+      when: (show_text_file | default('')) | length == 0
+
+    - name: Parse a saved capture instead
+      ansible.utils.cli_parse:
+        # realpath: a relative path means relative to where you ran the command, not to
+        # playbooks/network/, which is where the file lookup would otherwise search
+        text: "{{ lookup('ansible.builtin.file', show_text_file | ansible.builtin.realpath) }}"
+        parser:
+          name: ansible.netcommon.ntc_templates
+          command: "{{ show_command | default('show version') }}"
+      register: _saved
+      when: (show_text_file | default('')) | length > 0
+
+    - name: Keep whichever ran
+      ansible.builtin.set_fact:
+        show_parsed: "{{ (_saved if (show_text_file | default('')) | length > 0 else _live).parsed }}"
 
     - name: Show the structure, not the screen
       ansible.builtin.debug:
-        var: parsed.parsed
+        var: show_parsed
+
+    - name: Save the structure on the control node
+      when: show_save | default(false) | bool
+      delegate_to: localhost
+      vars:
+        _dir: "{{ show_save_dir | default(playbook_dir ~ '/../../.artifacts/parsed') }}/{{ inventory_hostname }}"
+        _name: "{{ show_command | default('show version') | regex_replace('[^A-Za-z0-9]+', '_') }}"
+      block:
+        - name: Ensure the host's directory exists
+          ansible.builtin.file:
+            path: "{{ _dir }}"
+            state: directory
+            mode: "0750"
+
+        - name: Write the parsed output as JSON
+          ansible.builtin.copy:
+            content: "{{ show_parsed | to_nice_json }}\n"
+            dest: "{{ _dir }}/{{ _name }}.json"
+            mode: "0640"

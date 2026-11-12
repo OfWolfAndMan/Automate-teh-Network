@@ -33,7 +33,7 @@ License Type: Permanent
 Next reload license Level: Ipservices
 
 cisco WS-C3850X-24P-PROTO2 (MIPS) processor with 2097152K bytes of physical memory.
-Processor board ID LAB20000003
+Processor board ID LAB20000004
 1 Virtual Ethernet interface
 56 Gigabit Ethernet interfaces
 8 Ten Gigabit Ethernet interfaces

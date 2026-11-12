@@ -8,7 +8,10 @@ time.
 |-----------|----------|--------|
 | `backups/` | 20 device configuration dumps (IOSV1–10, SW1–4, vEOS1–3, C-VX-01–03) | sanitised lab captures, 2017 |
 | `configs/` | 4 generated management-switch configurations | sanitised template output, 2017 |
-| `show/` | 2 `show version` captures from a two-member Catalyst 3850 stack | Network-Automation-Mini-Course, 2021; hostnames, serials and build user replaced; MAC lines removed (the scrub reads a colon MAC as IPv6) |
+| `show/` | 2 `show version` captures from a two-member Catalyst 3850 stack | Network-Automation-Mini-Course, 2021; hostnames, serials and build user replaced; MAC lines removed (the scrub reads a colon MAC as IPv6); sw2's `Processor board ID` set to its active member's serial — the 2021 capture was a hand-edited copy of sw1 that missed that line |
+
+The `show/` captures are `show.yml`'s offline input (`tests/show/hosts.yml`,
+`scripts/e2e_show.sh`) as well as the examples'.
 
 The IOS and EOS dumps are the compliance check's evidence: `tests/compliance/hosts.yml` maps
 each one to an offline host, and `tests/test_compliance.py` pins what each should report.
