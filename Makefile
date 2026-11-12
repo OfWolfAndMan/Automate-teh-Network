@@ -27,7 +27,7 @@ preflight:
 	ansible-playbook playbooks/preflight.yml --ask-vault-pass
 
 syntax:
-	@set -e; for f in playbooks/*.yml; do echo "  $$f"; \
+	@set -e; for f in playbooks/*.yml playbooks/*/*.yml; do echo "  $$f"; \
 	  ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$$f" >/dev/null; done; \
 	  echo "  syntax ok"
 
