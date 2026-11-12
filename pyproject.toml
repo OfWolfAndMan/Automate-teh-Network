@@ -19,7 +19,9 @@ extend-exclude = ["collections", ".venv", "tools"]
 select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["compliance"]
+known-first-party = [
+    "compliance", "device", "concurrent_show", "access_ports", "show_version_csv", "inventory_db",
+]
 
 [tool.ruff.lint.per-file-ignores]
 # S101: pytest is built on assert.

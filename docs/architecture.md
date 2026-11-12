@@ -15,6 +15,7 @@ roles/network_backup/       one role, three platform task files
 roles/network_compliance/   policy gate, evaluation, report
 policies/                   compliance policies as data + their JSON Schema
 plugins/filter/             compliance_check — the policy engine, stdlib Python
+examples/python/            teaching programs for when Ansible is not enough
 tools/shield/               the containment scrub
 tools/gen_index.py          README inventory generated from playbook metadata
 lab/                        containerlab topology + the container target

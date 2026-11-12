@@ -19,7 +19,7 @@ help:
 	  test      "the whole harness, in order"
 
 setup:
-	$(PY) -m pip install --quiet -r requirements.txt
+	$(PY) -m pip install --quiet -r requirements.txt -r examples/python/requirements.txt
 	ansible-galaxy collection install -r requirements.yml -p ./collections
 
 inventory:
@@ -59,9 +59,9 @@ index-check:
 docs-check:
 	@if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then \
 	  docker run --rm -v "$(PWD):/w" -w /w node:20-alpine \
-	    npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	    npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md' 'examples/**/*.md'; \
 	elif command -v npx >/dev/null 2>&1; then \
-	  npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	  npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md' 'examples/**/*.md'; \
 	else \
 	  echo "SKIP: neither docker nor npx available"; \
 	fi

@@ -27,6 +27,7 @@ it by hand, and watch the next run repair exactly one thing.
 | [`docs/reading-a-playbook.md`](docs/reading-a-playbook.md) | one playbook annotated line by line |
 | [`docs/troubleshooting.md`](docs/troubleshooting.md) | the errors you will actually hit, and their fixes |
 | [`docs/compliance.md`](docs/compliance.md) | check every device against policy — runs offline, no hardware |
+| [`examples/python/`](examples/python/README.md) | when Ansible is not enough: five short Python programs, three run offline |
 
 The repository is an educational exercise first and a working toolkit second, so the
 documentation assumes no prior Ansible experience and explains the jargon where it appears
@@ -61,6 +62,7 @@ make preflight
 | `policies/` | compliance policies as data, and the JSON Schema they must satisfy |
 | `plugins/filter/` | `compliance_check`, the policy engine (stdlib Python) |
 | `inventories/lab/` | hosts, group_vars, host_vars; three address planes |
+| `examples/python/` | five teaching programs: regex, ntc-templates, SQL, classes, asyncio |
 | `tools/shield/` | the containment scrub CI enforces |
 | `tools/gen_index.py` | generates the playbook table below from metadata |
 | `lab/` | containerlab topology + the container target |
