@@ -14,7 +14,9 @@ from pathlib import Path
 import pytest
 
 import access_ports
+import comprehensions
 import concurrent_show
+import connect_with_logging
 import device
 import inventory_db
 import show_version_csv
@@ -198,3 +200,82 @@ def test_against_the_real_lab_inventory():
     conn = sqlite3.connect(":memory:")
     assert inventory_db.load(conn, inventory_db.inventory_json()) == 7
     assert [r[0] for r in inventory_db.find(conn, group="switches")] == ["sw1", "sw2"]
+
+
+# --- comprehensions.py ------------------------------------------------------------------
+
+HOSTVARS = {
+    "r1": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "10.0.10.11"},
+    "eos1": {"ansible_network_os": "arista.eos.eos", "ansible_host": "198.18.0.5"},
+    # link-local: what an interface gives itself when DHCP fails — in no declared plane
+    "rogue": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "169.254.10.1"},
+    "web1": {"ansible_connection": "community.docker.docker"},
+}
+
+
+@pytest.mark.parametrize(("address", "plane"), [
+    ("10.0.10.11", "internal"),
+    ("10.0.1.300", None),       # startswith("10.0.") would have said yes
+    ("169.254.10.1", None),
+    ("203.0.113.9", "example-3"),
+    ("198.19.255.1", "external"),
+    ("192.0.2.7", "example"),
+    ("192.168.1.300", None),    # startswith("192.168.") would have said yes
+    ("not-an-ip", None),
+])
+def test_plane_of_uses_real_address_arithmetic(address, plane):
+    assert comprehensions.plane_of(address) == plane
+
+
+def test_comprehensions_reshape_the_inventory():
+    hosts = comprehensions.network_hosts(HOSTVARS)
+    assert sorted(hosts) == ["eos1", "r1", "rogue"]
+    assert comprehensions.platforms(hosts) == {"ios", "eos"}
+    assert comprehensions.by_platform(hosts) == {"eos": ["eos1"], "ios": ["r1", "rogue"]}
+    assert comprehensions.outside_planes(hosts) == ["rogue"]
+
+
+@pytest.mark.skipif(shutil.which("ansible-inventory") is None, reason="needs ansible-core")
+def test_the_lab_inventory_sits_inside_the_planes():
+    hosts = comprehensions.network_hosts(inventory_db.inventory_json()["_meta"]["hostvars"])
+    assert len(hosts) == 7
+    assert comprehensions.outside_planes(hosts) == []
+
+
+# --- connect_with_logging.py ------------------------------------------------------------
+
+def test_each_failure_is_named_and_logged(caplog):
+    from netmiko.exceptions import NetmikoAuthenticationException, NetmikoTimeoutException
+
+    failures = {
+        "192.0.2.1": NetmikoAuthenticationException("bad password"),
+        "192.0.2.2": NetmikoTimeoutException("no route"),
+        "192.0.2.3": ConnectionRefusedError(),
+    }
+
+    def connect(host):
+        if host in failures:
+            raise failures[host]
+
+    with caplog.at_level("INFO", logger="connect"):
+        outcomes = [connect_with_logging.try_host(h, connect)
+                    for h in [*failures, "192.0.2.4"]]
+    assert [(o.ok, o.reason.split(" ")[0]) for o in outcomes] == [
+        (False, "authentication"), (False, "timed"), (False, "connection"), (True, "")]
+    assert "192.0.2.1: authentication failed" in caplog.text
+    assert "192.0.2.4: connected" in caplog.text
+
+
+def test_an_unexplained_error_is_not_swallowed():
+    # The course's bare `except:` would have logged this as a connection error.
+    def connect(host):
+        raise KeyError("a bug in our own code")
+
+    with pytest.raises(KeyError):
+        connect_with_logging.try_host("192.0.2.9", connect)
+
+
+def test_importing_configures_no_logging():
+    import logging
+
+    assert not logging.getLogger("connect").handlers
