@@ -7,7 +7,14 @@
 # from a cache this repository cannot see.
 ansible-core==2.21.6
 
+# ansible.utils.validate needs it on the control node: the compliance role checks
+# policies/compliance.yml against its JSON Schema before evaluating anything.
+jsonschema==4.26.0
+
 # Optional tooling used by `make lint`. Kept separate from the runtime pin so a
 # lint upgrade never silently changes the ansible-core under test.
 ansible-lint==25.6.1
 yamllint==1.37.1
+# The compliance filter and the examples are Python; they are tested and linted like it.
+pytest==9.2.0
+ruff==0.17.4

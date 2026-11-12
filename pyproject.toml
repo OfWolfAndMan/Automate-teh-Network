@@ -1,0 +1,28 @@
+# Tool configuration only. This repository is not a Python package; its Python is a
+# filter plugin, two tools and the teaching examples.
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "examples/python/tests"]
+# The filter plugin and the examples are imported as top-level modules, the way Ansible
+# and a student running `python examples/python/x.py` would import them.
+pythonpath = ["plugins/filter", "examples/python"]
+addopts = "-q --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# tools/ predates this configuration: 22 findings, mostly line length, in reviewed code that
+# guards what publishes. Restyling it belongs in its own change, not in passing.
+extend-exclude = ["collections", ".venv", "tools"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["compliance"]
+
+[tool.ruff.lint.per-file-ignores]
+# S101: pytest is built on assert.
+"tests/*.py" = ["S101"]
+"examples/python/tests/*.py" = ["S101"]
+

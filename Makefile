@@ -3,7 +3,7 @@
 
 PY ?= python3
 
-.PHONY: help setup inventory preflight lint syntax docs-check scrub test e2e-linux e2e-network lab-up lab-down index index-check
+.PHONY: help setup inventory preflight lint syntax docs-check scrub pytest compliance test full e2e-linux e2e-network lab-up lab-down index index-check
 
 help:
 	@printf '%-12s %s\n' \
@@ -14,6 +14,8 @@ help:
 	  lint      "yamllint + ansible-lint + syntax-check" \
 	  scrub     "SHIELD gate: fail if a credential, address or identifier would publish" \
 	  docs-check "markdown structure of README and docs/" \
+	  pytest    "unit tests: the compliance filter and the examples" \
+	  compliance "the compliance playbook, end to end, against the fixtures" \
 	  test      "the whole harness, in order"
 
 setup:
@@ -33,6 +35,7 @@ syntax:
 
 lint: syntax
 	yamllint -f parsable -c .yamllint.yml .
+	ruff check .
 	ansible-lint playbooks/ || true
 
 e2e-linux:
@@ -66,7 +69,13 @@ docs-check:
 scrub:
 	$(PY) tools/shield/sanitize.py --check .
 
-test: scrub inventory syntax index-check docs-check
+pytest:
+	$(PY) -m pytest
+
+compliance:
+	bash scripts/e2e_compliance.sh
+
+test: scrub inventory syntax index-check docs-check pytest compliance
 	@echo "harness ok"
 
 full: test e2e-linux

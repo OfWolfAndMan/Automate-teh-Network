@@ -1,0 +1,32 @@
+---
+# ---
+# title: Check configurations against compliance policy
+# status: partial
+# verified_on: 2026-11-12
+# verified_env: ansible-core 2.21.6; offline against 17 fixture configs — device collection not run
+# note: scripts/e2e_compliance.sh; collection is the network_backup role, itself unverified
+# ---
+# Is every device configured the way policy says it must be? The successor to the
+# mini-course's compliance service (Flask API + CiscoConfParse + a report file), reduced to
+# what answered the question: policies as data, one filter, one report.
+#
+#   ansible-playbook playbooks/network/compliance.yml --ask-vault-pass
+#
+# What it does, per host:
+#   1. collect the running configuration with the network_backup role (skip with
+#      -e network_compliance_collect=false to check configurations already on disk)
+#   2. evaluate policies/compliance.yml with the compliance_check filter
+#   3. write .artifacts/compliance/report.{md,json}, then fail any host with a violation
+#
+# Offline, against the fixture configs — no device, no vault:
+#
+#   ansible-playbook -i tests/compliance/hosts.yml playbooks/network/compliance.yml
+#
+# Defaults (paths, network_compliance_collect, network_compliance_fail_on_violation) live in
+# roles/network_compliance/defaults so an inventory or -e can override them.
+# Policy semantics and how to write one: docs/compliance.md.
+- name: Check configurations against compliance policy
+  hosts: network
+  gather_facts: false
+  roles:
+    - network_compliance

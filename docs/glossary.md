@@ -28,6 +28,9 @@ One sentence each, in the order you are likely to meet them.
 | **handler** | a task that only runs when something it watches reports a change, e.g. "reload nginx" |
 | **lint / ansible-lint** | a checker that reads your playbooks and complains about risky or unclear constructs |
 | **yamllint** | a checker for YAML formatting |
+| **compliance policy** | one rule a device's configuration must satisfy, written as data in `policies/compliance.yml` — "every vty line accepts only SSH" |
+| **JSON Schema** | a standard way to describe what valid data looks like; `policies/compliance.schema.json` rejects a malformed policy before it is used |
+| **filter plugin** | a Python function Ansible can call inside `{{ }}`; `compliance_check` is this repository's |
 | **fixture** | a saved sample of real data used for testing; `tests/fixtures/` holds sanitised device configurations |
 | **scrub** | this repository's own tool (`tools/shield/sanitize.py`) that replaces credentials and addresses with safe placeholders before they can be published |
 | **address plane** | the three ranges this repository allows: internal `10.0.0.0/16`, external `198.18.0.0/15`, documentation RFC 5737 |

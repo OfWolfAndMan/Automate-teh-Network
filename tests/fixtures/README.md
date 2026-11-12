@@ -6,8 +6,12 @@ time.
 
 | Directory | Contents | Origin |
 |-----------|----------|--------|
-| `backups/` | 13 device configuration dumps (IOSV1–10, SW1–4, vEOS1–3, C-VX-01–03) | sanitised lab captures, 2017 |
+| `backups/` | 20 device configuration dumps (IOSV1–10, SW1–4, vEOS1–3, C-VX-01–03) | sanitised lab captures, 2017 |
 | `configs/` | 4 generated management-switch configurations | sanitised template output, 2017 |
+
+The IOS and EOS dumps are the compliance check's evidence: `tests/compliance/hosts.yml` maps
+each one to an offline host, and `tests/test_compliance.py` pins what each should report.
+Changing a fixture changes those expectations.
 
 They are retained deliberately (reviewer ruling, 2026-11-11): a backup role without fixtures
 is a claim without a test, and these are the only device-shaped inputs this repository has.

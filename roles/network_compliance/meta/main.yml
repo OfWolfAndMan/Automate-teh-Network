@@ -1,0 +1,14 @@
+---
+# Evaluate a running configuration against policies/compliance.yml and report.
+# The engine is the compliance_check filter in plugins/filter/compliance.py.
+galaxy_info:
+  role_name: network_compliance
+  author: OfWolfAndMan
+  description: Check running configurations against data-driven compliance policies
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: GenericUNIX
+      versions: [all]
+  galaxy_tags: [networking, compliance]
+dependencies: []

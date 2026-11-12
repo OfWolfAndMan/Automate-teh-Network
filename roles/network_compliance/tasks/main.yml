@@ -1,0 +1,79 @@
+---
+- name: Load the policies
+  ansible.builtin.include_vars:
+    file: "{{ network_compliance_policy_file }}"
+
+- name: The policies satisfy their schema
+  ansible.utils.validate:
+    data: "{{ compliance_policies }}"
+    criteria: "{{ lookup('ansible.builtin.file', network_compliance_schema_file) | from_json }}"
+    engine: ansible.utils.jsonschema
+  vars:
+    ansible_validate_jsonschema_draft: 2020-12
+  run_once: true
+  delegate_to: localhost
+
+- name: Collect the running configuration
+  ansible.builtin.include_role:
+    name: network_backup
+  vars:
+    network_backup_dir: "{{ network_compliance_config_dir }}"
+  when: network_compliance_collect | bool
+
+- name: Find the configuration on the control node
+  ansible.builtin.stat:
+    path: "{{ network_compliance_config_path }}"
+  register: _compliance_config_file
+  delegate_to: localhost
+
+- name: Refuse to call a missing configuration compliant
+  ansible.builtin.assert:
+    that: _compliance_config_file.stat.exists
+    fail_msg: >-
+      {{ inventory_hostname }}: no configuration at {{ network_compliance_config_path }}.
+      Run with network_compliance_collect=true, or point network_compliance_config_path at a backup.
+    quiet: true
+
+- name: Evaluate the policies
+  ansible.builtin.set_fact:
+    network_compliance_results: >-
+      {{ lookup('ansible.builtin.file', network_compliance_config_path)
+         | compliance_check(compliance_policies, ansible_network_os, group_names) }}
+
+- name: Write the report
+  run_once: true
+  delegate_to: localhost
+  vars:
+    _report: >-
+      {{ dict(ansible_play_hosts
+              | zip(ansible_play_hosts | map('extract', hostvars, 'network_compliance_results'))) }}
+  block:
+    - name: Ensure the report directory exists
+      ansible.builtin.file:
+        path: "{{ network_compliance_report_dir }}"
+        state: directory
+        mode: "0750"
+
+    - name: Write the machine-readable report
+      ansible.builtin.copy:
+        content: "{{ _report | to_nice_json }}\n"
+        dest: "{{ network_compliance_report_dir }}/report.json"
+        mode: "0640"
+
+    - name: Write the human-readable report
+      ansible.builtin.template:
+        src: compliance_report.md.j2
+        dest: "{{ network_compliance_report_dir }}/report.md"
+        mode: "0640"
+
+- name: Every applicable policy is satisfied
+  ansible.builtin.assert:
+    that: _violations | length == 0
+    success_msg: "{{ inventory_hostname }}: {{ network_compliance_results | length }} policies, compliant"
+    fail_msg: >-
+      {{ inventory_hostname }}: {{ _violations | length }} of
+      {{ network_compliance_results | length }} policies violated —
+      {{ _violations | map(attribute='id') | join(', ') }}
+  vars:
+    _violations: "{{ network_compliance_results | rejectattr('compliant') | list }}"
+  when: network_compliance_fail_on_violation | bool

@@ -9,9 +9,12 @@ ansible.cfg                 toolchain behaviour: inventory, collections, timeout
 requirements.txt            pinned ansible-core and lint tooling
 requirements.yml            pinned collections
 inventories/lab/            the only inventory: hosts, group_vars, host_vars
-playbooks/network/          device-facing: backup, facts, interfaces, l2, hardening, show
+playbooks/network/          device-facing: backup, compliance, facts, interfaces, l2, hardening, show
 playbooks/linux/            host-facing: baseline, update_packages, web
 roles/network_backup/       one role, three platform task files
+roles/network_compliance/   policy gate, evaluation, report
+policies/                   compliance policies as data + their JSON Schema
+plugins/filter/             compliance_check — the policy engine, stdlib Python
 tools/shield/               the containment scrub
 tools/gen_index.py          README inventory generated from playbook metadata
 lab/                        containerlab topology + the container target
@@ -26,7 +29,9 @@ docs/                       the standards this repository is held to
    already correct?", which is the only question that matters on the second run. Every
    device-facing playbook here declares state through a resource module
    (`ios_interfaces`, `ios_l2_interfaces`, `ios_snmp_server`, …), and the lab asserts
-   `changed=0` on a second pass.
+   `changed=0` on a second pass. Compliance is the read-only half of the same idea: policy
+   is data, the device's configuration is evidence, and the answer is a report rather than
+   a push.
 
 2. **One role, dispatched on the platform the inventory already declares.** Four parallel
    role trees that differ only in a module name duplicate the platform fact the inventory
@@ -41,7 +46,7 @@ docs/                       the standards this repository is held to
 
 | Layer | Needs | Proves |
 |-------|-------|--------|
-| `make test` | python, ansible-core | scrub, inventory parse, syntax, README index |
+| `make test` | python, ansible-core | scrub, inventory parse, syntax, README index, pytest, compliance against the fixtures |
 | `make e2e-linux` | docker | a playbook converges and is idempotent (pass 2 changed=0) |
 | `make e2e-network` | containerlab + vendor images | the same, against a fabric |
 
