@@ -144,6 +144,8 @@ to check.
 | `roles/network_backup/tasks/main.yml` | a role, `include_tasks`, and dispatch on a variable |
 | `playbooks/network/interfaces.yml` | describing desired state instead of commands |
 | `playbooks/network/hardening.yml` | asserting that something is *absent* |
+| `roles/network_compliance/tasks/main.yml` | loading data and validating it against a schema, a custom filter, `run_once` with `delegate_to`, and failing *after* the report is written |
+| `playbooks/network/show.yml` | `when:` with explicit true/false tests, parsing text you already have, and `default()` so an inventory can override a setting |
 
 One habit: when a module name is unfamiliar, ask Ansible rather than a search engine.
 

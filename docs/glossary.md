@@ -31,6 +31,12 @@ One sentence each, in the order you are likely to meet them.
 | **compliance policy** | one rule a device's configuration must satisfy, written as data in `policies/compliance.yml` — "every vty line accepts only SSH" |
 | **JSON Schema** | a standard way to describe what valid data looks like; `policies/compliance.schema.json` rejects a malformed policy before it is used |
 | **filter plugin** | a Python function Ansible can call inside `{{ }}`; `compliance_check` is this repository's |
+| **delegate_to / run_once** | run a task on a different machine than the host being processed (usually `localhost`, to write a file on your own machine), and run it once for the whole play instead of once per host |
+| **variable precedence** | the rule for which value wins when a variable is set in several places; a play's `vars:` outranks the inventory, which outranks a role's `defaults/` — so a default that must stay overridable belongs in the role |
+| **Netmiko** | a Python library that logs in to a network device over SSH and runs commands; the Python examples use it |
+| **ntc-templates** | a library of parsers that turn the text of a `show` command into structured data; `show.yml` and `examples/python/show_version_csv.py` use it |
+| **pytest** | the Python test runner; `make pytest` runs this repository's tests |
+| **ruff** | a fast Python linter; `make lint` runs it |
 | **fixture** | a saved sample of real data used for testing; `tests/fixtures/` holds sanitised device configurations |
 | **scrub** | this repository's own tool (`tools/shield/sanitize.py`) that replaces credentials and addresses with safe placeholders before they can be published |
 | **address plane** | the three ranges this repository allows: internal `10.0.0.0/16`, external `198.18.0.0/15`, documentation RFC 5737 |

@@ -52,6 +52,10 @@ full legal name is not — not in prose, not in a copyright line, not in commit 
 make setup       # ansible-core + collections, pinned
 make inventory   # parse and graph the inventory
 make preflight   # the preflight gates (needs a vault password)
-make lint        # yamllint + ansible-lint + syntax-check
+make lint        # yamllint + ruff + ansible-lint + syntax-check, exactly as CI runs them
 make scrub       # the SHIELD gate
+make pytest      # unit tests: the compliance filter and the examples
+make compliance  # the compliance playbook against the fixtures, offline
+make show        # show.yml parse-and-save against saved captures, offline
+make test        # scrub, inventory, syntax, README index, docs, pytest, compliance, show — no vault, no device
 ```
