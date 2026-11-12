@@ -3,7 +3,7 @@
 # title: Serve a loopback-only TLS page
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # note: key generated on the target, never committed
 # ---
 # Successor to the 2017 nginx role, which committed a matching key and certificate into the
