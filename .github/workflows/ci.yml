@@ -50,6 +50,9 @@ jobs:
             echo "  $f"
             ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$f" >/dev/null
           done
+      - name: markdown structure
+        run: npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'
+
       - name: ansible-lint
         env:
           # ansible-lint resolves modules through the same path the playbooks use

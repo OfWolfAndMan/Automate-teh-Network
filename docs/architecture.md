@@ -4,7 +4,7 @@ What this repository is, and what it refuses to be.
 
 ## Shape
 
-```
+```text
 ansible.cfg                 toolchain behaviour: inventory, collections, timeouts
 requirements.txt            pinned ansible-core and lint tooling
 requirements.yml            pinned collections

@@ -14,6 +14,23 @@ only question that matters: *is the device already correct?*
 | Inventory | `inventories/lab/`, credentials from an encrypted vault file |
 | Status | pushed on `modernize/phase-0`; no network playbook has run against a device — see *What is not verified* |
 
+## New to Ansible?
+
+Start with the tutorial. It is a thirty-minute guided exercise that needs no network hardware:
+you install the tools, read the inventory, run a playbook that changes a real container, break
+it by hand, and watch the next run repair exactly one thing.
+
+| Document | What it gives you |
+|----------|-------------------|
+| [`docs/tutorial.md`](docs/tutorial.md) | the guided exercise, start to finish |
+| [`docs/glossary.md`](docs/glossary.md) | every term in this repository, one sentence each |
+| [`docs/reading-a-playbook.md`](docs/reading-a-playbook.md) | one playbook annotated line by line |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | the errors you will actually hit, and their fixes |
+
+The repository is an educational exercise first and a working toolkit second, so the
+documentation assumes no prior Ansible experience and explains the jargon where it appears
+rather than defining it in a footnote.
+
 ## Quick start
 
 ```bash
@@ -45,7 +62,7 @@ make preflight
 | `lab/` | containerlab topology + the container target |
 | `scripts/e2e_*.sh` | the two lab layers and their assertions |
 | `tests/fixtures/` | sanitised device configs, read-only inputs |
-| `docs/` | address/placeholder standard, architecture, retirements |
+| `docs/` | tutorial, glossary, playbook walkthrough, troubleshooting, standards, retirements |
 
 ## Verification
 
