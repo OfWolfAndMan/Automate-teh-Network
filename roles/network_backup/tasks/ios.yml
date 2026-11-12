@@ -1,0 +1,12 @@
+---
+- name: Save the running configuration
+  cisco.ios.ios_config:
+    backup: true
+    backup_options:
+      dir_path: "{{ network_backup_dir }}"
+      filename: "{{ inventory_hostname }}.cfg"
+  register: _backup
+
+- name: Record where the configuration was written
+  ansible.builtin.debug:
+    msg: "{{ inventory_hostname }}: {{ _backup.backup_path | default('no change') }}"

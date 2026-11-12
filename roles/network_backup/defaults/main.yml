@@ -1,0 +1,6 @@
+---
+# Where artifacts land on the control node. Keep it inside the repo's ignored area so a
+# collected configuration is never committed by accident: these are outputs, not sources.
+network_backup_dir: "{{ playbook_dir }}/../.artifacts/configs"
+network_backup_facts: true
+network_backup_facts_dir: "{{ playbook_dir }}/../.artifacts/facts"

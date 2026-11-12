@@ -1,0 +1,39 @@
+MIT License (code) / CC BY-SA 4.0 (prose)
+==========================================
+
+Copyright (c) 2017-2026 Anthony W and contributors
+
+This repository is dual-licensed by content type, because it contains two
+different kinds of work.
+
+1. CODE — playbooks, roles, plugins, inventory, templates, Makefile and scripts —
+   is licensed under the MIT License:
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all
+   copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+2. PROSE — README, CONTRIBUTING, docs/ and explanatory comments — is licensed
+   under Creative Commons Attribution-ShareAlike 4.0 International
+   (CC BY-SA 4.0): https://creativecommons.org/licenses/by-sa/4.0/
+
+Where the two overlap in a single file, the code portion is MIT and the prose
+portion is CC BY-SA 4.0.
+
+Device configurations under Playbooks/Network_Vendors/*/backup/ are lab output,
+sanitised to synthetic values. They are not real device configurations and are
+provided as test fixtures under the MIT terms.

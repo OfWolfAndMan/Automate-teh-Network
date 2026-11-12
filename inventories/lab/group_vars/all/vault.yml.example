@@ -1,0 +1,9 @@
+---
+# Template. Copy to vault.yml, set local values, then ENCRYPT before it exists in git:
+#   ansible-vault encrypt inventories/lab/group_vars/all/vault.yml
+#
+# The values below are placeholders written in the house form (LAB-ONLY-<hex>). They are
+# not secrets and are not used: if vault.yml is missing, the preflight playbook fails
+# loudly rather than silently connecting with a placeholder.
+vault_ansible_password: "LAB-ONLY-change-me"
+vault_ansible_become_password: "LAB-ONLY-change-me"

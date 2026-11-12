@@ -1,0 +1,34 @@
+---
+# ---
+# title: Run a command and parse it
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# note: cli_parse lives in ansible.utils as of netcommon 8.x
+# ---
+# Read-only command output, parsed into structure — the successor to `ntc_show_command`,
+# which lived in the archived `ntc-ansible` role and pointed its template_dir at a sibling
+# checkout that no longer exists. `ansible.utils.cli_parse` with the ntc_templates parser
+# is the supported path, and it runs the command itself. (The module moved out of
+# ansible.netcommon 8.x, where only the filter plugins remain — verified by listing the
+# installed collection rather than by remembering.)
+#
+#   ansible-playbook playbooks/network/show.yml --ask-vault-pass -e 'show_command="show ip interface brief"'
+- name: Run a command and parse it
+  hosts: network
+  gather_facts: false
+
+  vars:
+    show_command: "show version"
+
+  tasks:
+    - name: Run the command and parse the output
+      ansible.utils.cli_parse:
+        command: "{{ show_command }}"
+        parser:
+          name: ansible.netcommon.ntc_templates
+      register: parsed
+
+    - name: Show the structure, not the screen
+      ansible.builtin.debug:
+        var: parsed.parsed

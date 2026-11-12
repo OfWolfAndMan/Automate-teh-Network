@@ -1,0 +1,14 @@
+---
+# L2 intent for a lab access switch: two access ports and an uplink trunk.
+intended_l2:
+  - name: GigabitEthernet0/1
+    access:
+      vlan: 30
+  - name: GigabitEthernet0/2
+    access:
+      vlan: 40
+  - name: GigabitEthernet0/24
+    trunk:
+      allowed_vlans:
+        - 30
+        - 40

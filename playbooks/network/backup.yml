@@ -1,0 +1,18 @@
+---
+# ---
+# title: Back up device configurations
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only — no fabric images on the build host
+# ---
+# Collect the running configuration from every platform in the inventory.
+# One role, three task files, one command.
+#
+#   ansible-playbook playbooks/network/backup.yml --ask-vault-pass
+#
+# Artifacts land in .artifacts/configs/ (git-ignored): they are output, not source.
+- name: Back up network device configurations
+  hosts: network
+  gather_facts: false
+  roles:
+    - network_backup
