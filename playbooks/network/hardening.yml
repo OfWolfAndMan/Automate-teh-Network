@@ -3,7 +3,7 @@
 # title: Remove factory-default SNMP communities
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # ---
 # Successor to Playbooks/Network_Vendors/breakconfig.yml, which sent `no snmp-server community
 # public` as free-form lines. Declarative now: the resource module owns the whole SNMP view,

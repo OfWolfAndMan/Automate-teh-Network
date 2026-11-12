@@ -3,7 +3,7 @@
 
 PY ?= python3
 
-.PHONY: help setup inventory preflight lint syntax scrub test e2e-linux e2e-network lab-up lab-down index index-check
+.PHONY: help setup inventory preflight lint syntax docs-check scrub test e2e-linux e2e-network lab-up lab-down index index-check
 
 help:
 	@printf '%-12s %s\n' \
@@ -13,6 +13,7 @@ help:
 	  syntax    "ansible-playbook --syntax-check over playbooks/" \
 	  lint      "yamllint + ansible-lint + syntax-check" \
 	  scrub     "SHIELD gate: fail if a credential, address or identifier would publish" \
+	  docs-check "markdown structure of README and docs/" \
 	  test      "the whole harness, in order"
 
 setup:
@@ -52,10 +53,20 @@ index:
 index-check:
 	$(PY) tools/gen_index.py --check
 
+docs-check:
+	@if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then \
+	  docker run --rm -v "$(PWD):/w" -w /w node:20-alpine \
+	    npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	elif command -v npx >/dev/null 2>&1; then \
+	  npx --yes markdownlint-cli2 'docs/*.md' 'README.md' 'tests/fixtures/*.md'; \
+	else \
+	  echo "SKIP: neither docker nor npx available"; \
+	fi
+
 scrub:
 	$(PY) tools/shield/sanitize.py --check .
 
-test: scrub inventory syntax index-check
+test: scrub inventory syntax index-check docs-check
 	@echo "harness ok"
 
 full: test e2e-linux

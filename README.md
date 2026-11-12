@@ -1,111 +1,82 @@
-> **Status (2026-11-11): modernized, unpushed.** The 2017-2024 corpus has been contained,
-> re-laid-out and rewritten on branch `modernize/phase-0`. What is here now:
->
-> - `playbooks/network/` and `playbooks/linux/` — intent-based playbooks on current
->   collections (`cisco.ios` 11.6, `cisco.nxos` 13.0, `arista.eos` 12.3)
-> - `roles/network_backup/` — one role replacing four per-OS role trees
-> - `inventories/lab/` — the three-plane address scheme, credentials from a vault
-> - `tools/shield/` — the containment scrub that CI enforces
-> - `lab/` + `scripts/e2e_*.sh` — the substrate and its idempotence assertions
-> - `docs/` — the address/placeholder standard, the architecture, and every retirement
->
-> Rules in `CONTRIBUTING.md`. The legacy playbooks that this replaces are gone; each
-> removal and its reason is in `docs/retirements.md`. Device configuration dumps live in
-> `tests/fixtures/` and are retained deliberately as read-only test inputs.
+# Automate teh Network
 
+Intent-based network and Linux automation with Ansible, replacing a 2017–2024 corpus of
+Python 2.7 playbooks that rendered whole device configurations and pushed them with
+`ios_config: lines:`.
 
-# Ansible Playbooks (Linux and Network Vendors)
-## Version 1.0
+This repository declares **state** through resource modules, so a second run can answer the
+only question that matters: *is the device already correct?*
 
-An array of Ansible playbooks in the making for the benefit of automating all the things (Or those that should be).
+| | |
+|---|---|
+| Toolchain | `ansible-core` 2.21.6 (pinned), collections pinned in `requirements.yml` |
+| Platforms | Cisco IOS/IOS-XE, Cisco NX-OS, Arista EOS |
+| Inventory | `inventories/lab/`, credentials from an encrypted vault file |
+| Status | pushed on `modernize/phase-0`; no network playbook has run against a device — see *What is not verified* |
 
-Built in python 2.7, although will be migrated to python 3.6 soon due to nearing EOS state of 2.7.
+## New to Ansible?
 
-These playbooks are constructed in a manner that aligns as close to "Best practice" as possible. For more details on Ansible best practice file structure, visit Ansible's website, or view the "playbook-build-example" file.
+Start with the tutorial. It is a thirty-minute guided exercise that needs no network hardware:
+you install the tools, read the inventory, run a playbook that changes a real container, break
+it by hand, and watch the next run repair exactly one thing.
 
-**Environment variables**
-The following should be set in your environment file (i.e. .bashrc) to ensure proper usage:
-- NETWORK_DOMAIN_NAME
+| Document | What it gives you |
+|----------|-------------------|
+| [`docs/tutorial.md`](docs/tutorial.md) | the guided exercise, start to finish |
+| [`docs/glossary.md`](docs/glossary.md) | every term in this repository, one sentence each |
+| [`docs/reading-a-playbook.md`](docs/reading-a-playbook.md) | one playbook annotated line by line |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | the errors you will actually hit, and their fixes |
 
-**Variable Precedence**
+The repository is an educational exercise first and a working toolkit second, so the
+documentation assumes no prior Ansible experience and explains the jargon where it appears
+rather than defining it in a footnote.
 
-It is important to know the variable precedence to understand how to structure each playbook. Below is the precedence as of Ansible 2.3.x
+## Quick start
 
- | PRECEDENCE |      VARIABLE NAME      |           COMMON LOCATION          |
- |------------|-------------------------|------------------------------------|
- | 1.         | Inventory Vars          | Inventory file [all:vars]          |
- | 2.         | Inventory Group_Vars    | Inventory file [group:vars]        |
- | 3.         | Inventory Host_Vars     | Inventory file [host:vars]         |
- | 4.         | Playbook All vars       | /vars/                             |
- | 5.         | Playbook Group_Vars     | /group_vars/                       |
- | 6.         | Playbook Host_Vars      | /host_vars/                        |
- | 7.         | Host Facts              | Playbook -  gather_facts module    |
- | 8.         | Registered Vars         | Playbook - register module         |
- | 9.         | Set_Facts               | Playbook - set_fact module.        |
- | 10.        | Play vars               | Defined within playbook            |
- | 11.        | Play vars_prompt        | Defined within playbook            |
- | 12.        | Play vars_files         | Defined within playbook            |
- | 13.        | Role and include vars   | /roles/ and within playbook        |
- | 14.        | Block vars              | Playbook - block module            |
- | 15.        | Task vars               | Defined within playbook            |
- | 16.        | Extra vars              | --extra-vars - adhoc command       |
+```bash
+make setup        # ansible-core + collections, pinned
+make inventory    # parse and graph the inventory
+make test         # scrub, inventory, syntax-check, README index
+make full         # the above, plus the container idempotence run
+```
 
-**Network Vendors support**
+The preflight playbook needs a vault; it refuses to run without one:
 
-The following is a list of the network vendors that are currently or will be included in the future with these playbooks.
+```bash
+cp inventories/lab/group_vars/all/vault.yml.example inventories/lab/group_vars/all/vault.yml
+$EDITOR inventories/lab/group_vars/all/vault.yml      # set local lab credentials
+ansible-vault encrypt inventories/lab/group_vars/all/vault.yml
+make preflight
+```
 
- |  Vendor/OS      |   Status      |
- |-----------------|---------------|
- | Cisco IOS/XE    | Available     |
- | Cisco IOS-XR    | Not Projected |
- | Cisco NX-OS     | Projected     |
- | Arista vEOS     | In Progress   |
- | Cumulus VX      | In Progress   |
- | HP (Any)        | Not Projected |
- | Brocade (Any)   | Unsure        |
- | Avaya ERS       | Available     |
- | Avaya VSP       | Projected     |
- | Junos           | Projected     |
- | Riverbed RiOS   | Desired       |
- | Citrix Netscaler| Desired       |
+## Layout
 
-- Available: A playbook exists
+| Path | Contents |
+|------|----------|
+| `playbooks/network/` | backup, facts, interfaces, l2, hardening, show |
+| `playbooks/linux/` | baseline, update_packages, web (TLS generated on the host) |
+| `roles/network_backup/` | one role, three platform task files, dispatched on `ansible_network_os` |
+| `inventories/lab/` | hosts, group_vars, host_vars; three address planes |
+| `tools/shield/` | the containment scrub CI enforces |
+| `tools/gen_index.py` | generates the playbook table below from metadata |
+| `lab/` | containerlab topology + the container target |
+| `scripts/e2e_*.sh` | the two lab layers and their assertions |
+| `tests/fixtures/` | sanitised device configs, read-only inputs |
+| `docs/` | tutorial, glossary, playbook walkthrough, troubleshooting, standards, retirements |
 
-- Not Projected: Nothing completed and nothing planning to be done
+## Verification
 
-- Projected: Plans to be written, but not a current task
+A playbook states when it was last executed and against what, or it says it never was.
 
-- In progress: In a particular stage of development
+| Status | Means |
+|--------|-------|
+| `verified` | executed against the stated platform and toolchain |
+| `partial` | part of it ran; the note says which part did not |
+| `unverified` | never run beyond syntax and lint — never described as working |
+| `retired` | kept only for history |
 
-- Unsure: Thoughts of writing a playbook, but unsure if necessary
-
-- Desired: Little support from the community. Would require extensive efforts on the backend.
-
-**Playbook Examples**
-
-- Template rendering of network configurations
-
-- SNMP facts
-
-- Show output parsing to a SQL file (Using ntc-ansible's TextFSM feature)
-
-- Roles for modular Playbook implementation
-
-**Future Vision Feature sets**
-
-- NAPALM playbooks
- 
-  + Diff capabilities
-
-  + Configuration pushes
-
-  + Configuration Backups
-
-- Topology maps
-
-- Further development of roles
-
-- AWX OR Ara integration. Not sure which yet
+The table below is generated by `tools/gen_index.py --write`; CI fails if it drifts from the
+metadata. An unknown status is an error, not a blank cell.
 
 ## Playbooks
 
@@ -113,17 +84,52 @@ The following is a list of the network vendors that are currently or will be inc
 
 | Playbook | Purpose | Status | Verified | Environment |
 |----------|---------|--------|----------|-------------|
-| `playbooks/linux/baseline.yml` | Baseline a Linux host | **verified** | 2026-11-11 | ansible-core 2.22.0, community.docker, python:3.12-slim |
-| `playbooks/linux/update_packages.yml` | Update packages | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/linux/web.yml` | Serve a loopback-only TLS page | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/network/backup.yml` | Back up device configurations | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only — no fabric images on the build host |
-| `playbooks/network/facts.yml` | Gather structured interface facts | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/network/hardening.yml` | Remove factory-default SNMP communities | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/network/interfaces.yml` | Converge L3 interface intent | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/network/l2.yml` | Converge L2 interface intent | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/network/show.yml` | Run a command and parse it | **unverified** | 2026-11-11 | ansible-core 2.22.0; syntax-check only |
-| `playbooks/preflight.yml` | Preflight — inventory, address plane and credential gate | **verified** | 2026-11-11 | ansible-core 2.22.0; 7/7 network hosts; empty vault fails, template vault fails, encrypted vault passes |
+| `playbooks/linux/baseline.yml` | Baseline a Linux host | **verified** | 2026-11-11 | ansible-core 2.21.6, community.docker, python:3.12-slim |
+| `playbooks/linux/update_packages.yml` | Update packages | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/linux/web.yml` | Serve a loopback-only TLS page | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/network/backup.yml` | Back up device configurations | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only — no fabric images on the build host |
+| `playbooks/network/facts.yml` | Gather structured interface facts | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/network/hardening.yml` | Remove factory-default SNMP communities | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/network/interfaces.yml` | Converge L3 interface intent | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/network/l2.yml` | Converge L2 interface intent | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/network/show.yml` | Run a command and parse it | **unverified** | 2026-11-11 | ansible-core 2.21.6; syntax-check only |
+| `playbooks/preflight.yml` | Preflight — inventory, address plane and credential gate | **verified** | 2026-11-11 | ansible-core 2.21.6; 7/7 network hosts; empty vault fails, template vault fails, encrypted vault passes |
 
 _10 playbooks. Generated by `tools/gen_index.py`._
 
 <!-- INDEX:END -->
+
+## What is not verified
+
+No network playbook has touched a device. The containerlab fabric in `lab/network.clab.yml`
+needs Arista cEOS, which is licensed per account and is not bundled here, so
+`make e2e-network` refuses to half-deploy and exits 77 with the exact pull commands. CI
+reports that as a notice, not a pass. Everything marked `unverified` above is syntax-checked
+and linted and nothing more.
+
+## Rules
+
+- **Nothing published carries a real credential, address or name.** Credentials become
+  generated `LAB-ONLY-` placeholders, key material is deleted and regenerated at runtime, and
+  addresses live in three declared planes. `make scrub` enforces it; see
+  `docs/addressing-and-placeholder-standard.md`.
+- **A claim is current only if it was executed.** See `CONTRIBUTING.md`.
+- **Retirements are recorded with reasons** in `docs/retirements.md`, including two products
+  that were retired rather than migrated: Avaya ERS (sold to Extreme in 2017) and Quagga
+  (superseded by FRR).
+
+## History
+
+The original repository was a learning corpus: Python 2.7, Ansible 2.3, `provider:` dicts,
+inline `ansible_ssh_pass` in inventory files, a committed TLS keypair, and a vendor support
+table that sat unchanged for six years. Its playbooks did not run on any current
+`ansible-core` — 14 of 23 failed `--syntax-check` because their modules left core in the 2.10
+collection split.
+
+What survived is the device configuration dumps, now sanitised fixtures under
+`tests/fixtures/`. Everything else is in git history, and the reason each item was dropped is
+in `docs/retirements.md`.
+
+## Licence
+
+MIT for code, CC BY-SA 4.0 for prose. See `LICENSE`.

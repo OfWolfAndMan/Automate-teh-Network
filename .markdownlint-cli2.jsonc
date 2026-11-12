@@ -1,0 +1,9 @@
+{
+  "//": "Structural lint only. Line length and table-alignment preferences are disabled because this repository's tables are generated and deliberately wide.",
+  "config": {
+    "MD013": false,
+    "MD049": false,
+    "MD060": false,
+    "MD033": false
+  }
+}

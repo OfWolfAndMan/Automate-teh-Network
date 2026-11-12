@@ -3,7 +3,7 @@
 # title: Gather structured interface facts
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # ---
 # Structured facts rather than screen-scraped text. This replaces the 2017 `ntc_show_command`
 # playbook, whose module lived in an archived role and whose template path pointed at a

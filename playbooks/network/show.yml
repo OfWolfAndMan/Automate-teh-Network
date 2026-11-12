@@ -3,7 +3,7 @@
 # title: Run a command and parse it
 # status: unverified
 # verified_on: 2026-11-11
-# verified_env: ansible-core 2.22.0; syntax-check only
+# verified_env: ansible-core 2.21.6; syntax-check only
 # note: cli_parse lives in ansible.utils as of netcommon 8.x
 # ---
 # Read-only command output, parsed into structure — the successor to `ntc_show_command`,
