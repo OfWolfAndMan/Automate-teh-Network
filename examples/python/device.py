@@ -9,7 +9,7 @@ hard-coded password the moment the file was imported, and assumed a connection e
 before checking (`if self.connection:` raised AttributeError when it did not).
 
     export LAB_USERNAME=lab LAB_PASSWORD=...        # never in the file
-    python examples/python/device.py 10.0.10.11 "show version" --device-type cisco_ios
+    python examples/python/device.py 192.0.2.11 "show version" --device-type cisco_ios
 """
 
 from __future__ import annotations

@@ -28,8 +28,8 @@ The two that log in read credentials from the environment, never from the file:
 ```bash
 export LAB_USERNAME=lab
 read -rs LAB_PASSWORD && export LAB_PASSWORD     # typed, not left in shell history
-python examples/python/device.py 10.0.10.11 "show version"
-python examples/python/concurrent_show.py "show clock" 10.0.10.11 10.0.10.12 --limit 5
+python examples/python/device.py 192.0.2.11 "show version"
+python examples/python/concurrent_show.py "show clock" 192.0.2.11 192.0.2.12 --limit 5
 ```
 
 ## Four habits every file follows

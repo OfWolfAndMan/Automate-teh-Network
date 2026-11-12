@@ -10,7 +10,7 @@ Netmiko inside coroutines (so ran one device at a time), used the deprecated
 `asyncio.get_event_loop()`, popped a single host off its list, and ran on import.
 
     export LAB_USERNAME=lab LAB_PASSWORD=...
-    python examples/python/concurrent_show.py "show clock" 10.0.10.11 10.0.10.12 --limit 5
+    python examples/python/concurrent_show.py "show clock" 192.0.2.11 192.0.2.12 --limit 5
 """
 
 from __future__ import annotations

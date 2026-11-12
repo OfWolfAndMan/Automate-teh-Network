@@ -1,7 +1,7 @@
 """SQL for network engineers: load the Ansible inventory into SQLite and query it.
 
 Lesson: a database answers questions an inventory file cannot answer quickly ("every IOS
-device in the 10.0.20.0/24 plane"). Two rules carry most of the safety:
+device whose address is in 192.0.2.0/24"). Two rules carry most of the safety:
 
   1. VALUES go through placeholders (`?`), never through f-strings. The driver quotes
      them, so a hostname like `x'; DROP TABLE devices; --` is stored as a strange name

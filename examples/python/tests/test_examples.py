@@ -52,7 +52,7 @@ def fake_netmiko(monkeypatch):
 
 
 def test_context_manager_disconnects_even_when_the_body_raises(fake_netmiko):
-    with pytest.raises(ZeroDivisionError), device.NetworkDevice("10.0.10.11", "u", "p") as dev:
+    with pytest.raises(ZeroDivisionError), device.NetworkDevice("192.0.2.11", "u", "p") as dev:
         assert dev.send("show clock") == "output of show clock"
         1 / 0  # noqa: B018
     assert fake_netmiko.instances[0].closed
@@ -60,16 +60,16 @@ def test_context_manager_disconnects_even_when_the_body_raises(fake_netmiko):
 
 
 def test_password_never_appears_in_repr():
-    assert "s3cret" not in repr(device.NetworkDevice("10.0.10.11", "u", "s3cret"))
+    assert "s3cret" not in repr(device.NetworkDevice("192.0.2.11", "u", "s3cret"))
 
 
 def test_send_before_connect_is_a_clear_error_not_an_attribute_error():
     with pytest.raises(RuntimeError, match="not connected"):
-        device.NetworkDevice("10.0.10.11", "u", "p").send("show clock")
+        device.NetworkDevice("192.0.2.11", "u", "p").send("show clock")
 
 
 def test_router_inherits_and_extends(fake_netmiko):
-    with device.Router("10.0.10.11", "u", "p") as r:
+    with device.Router("192.0.2.11", "u", "p") as r:
         assert r.prompt() == "r1#"
         assert r.send("x") == "output of x"
 
@@ -78,10 +78,10 @@ def test_credentials_come_from_the_environment(monkeypatch):
     monkeypatch.delenv("LAB_USERNAME", raising=False)
     monkeypatch.delenv("LAB_PASSWORD", raising=False)
     with pytest.raises(device.CredentialsMissing):
-        device.NetworkDevice.from_env("10.0.10.11")
+        device.NetworkDevice.from_env("192.0.2.11")
     monkeypatch.setenv("LAB_USERNAME", "lab")
     monkeypatch.setenv("LAB_PASSWORD", "pw")
-    assert device.NetworkDevice.from_env("10.0.10.11").username == "lab"
+    assert device.NetworkDevice.from_env("192.0.2.11").username == "lab"
 
 
 # --- concurrent_show.py -----------------------------------------------------------------
@@ -154,9 +154,9 @@ def test_parses_both_captures_and_keeps_every_stack_member(tmp_path):
 
 INV = {
     "_meta": {"hostvars": {
-        "r1": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "10.0.10.11"},
-        "sw1": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "10.0.20.21"},
-        "eos1": {"ansible_network_os": "arista.eos.eos", "ansible_host": "10.0.30.41"},
+        "r1": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "192.0.2.11"},
+        "sw1": {"ansible_network_os": "cisco.ios.ios", "ansible_host": "192.0.2.21"},
+        "eos1": {"ansible_network_os": "arista.eos.eos", "ansible_host": "192.0.2.41"},
         "web1": {"ansible_connection": "community.docker.docker"},
     }},
     "routers": {"hosts": ["r1"]},
@@ -179,7 +179,7 @@ def test_loads_network_devices_only(db):
 
 def test_filters_by_platform_and_group(db):
     rows = inventory_db.find(db, platform="ios", group="switches")
-    assert rows == [("sw1", "ios", "10.0.20.21")]
+    assert rows == [("sw1", "ios", "192.0.2.21")]
 
 
 def test_a_hostile_value_is_data_not_sql(db):
