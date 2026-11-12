@@ -1,0 +1,22 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+  comments:
+    min-spaces-from-content: 1
+  document-start:
+    level: warning
+
+# Installed collections, virtualenvs and run artifacts are not this repository's source.
+ignore: |
+  collections/
+  .venv/
+  .artifacts/
+  # GitHub Actions: `on:` is parsed as boolean true by YAML 1.1, so every workflow trips
+  # the truthy rule. Workflow validity is checked by the runner itself, not by this linter.
+  .github/workflows/

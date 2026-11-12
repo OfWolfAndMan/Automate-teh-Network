@@ -1,0 +1,62 @@
+---
+# ---
+# title: Serve a loopback-only TLS page
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# note: key generated on the target, never committed
+# ---
+# Successor to the 2017 nginx role, which committed a matching key and certificate into the
+# repository. The certificate here is generated on the target at run time, from the same
+# command the old `generatetls.sh` used, so a private key exists only on the host that needs
+# it and never in git.
+- name: Serve a loopback-only TLS page
+  hosts: linux
+  become: true
+  gather_facts: true
+
+  vars:
+    tls_dir: /etc/nginx/tls
+    tls_cn: localhost
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Ensure the TLS directory exists
+      ansible.builtin.file:
+        path: "{{ tls_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Generate the key and self-signed certificate on the host
+      ansible.builtin.command:
+        cmd: >-
+          openssl req -x509 -nodes -days 825 -newkey rsa:2048
+          -subj /CN={{ tls_cn }}
+          -keyout {{ tls_dir }}/nginx.key -out {{ tls_dir }}/nginx.crt
+        creates: "{{ tls_dir }}/nginx.key"
+
+    - name: Place the site configuration
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/default.conf
+        mode: "0644"
+        content: |
+          server {
+            listen 443 ssl;
+            server_name {{ tls_cn }};
+            ssl_certificate     {{ tls_dir }}/nginx.crt;
+            ssl_certificate_key {{ tls_dir }}/nginx.key;
+            location / { return 200 "ok\n"; }
+          }
+      notify: Reload nginx
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded

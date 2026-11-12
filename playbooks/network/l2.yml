@@ -1,0 +1,44 @@
+---
+# ---
+# title: Converge L2 interface intent
+# status: unverified
+# verified_on: 2026-11-11
+# verified_env: ansible-core 2.22.0; syntax-check only
+# ---
+# L2 intent, the successor to Playbooks/Network_Vendors/L2switches.yml, which rendered
+# management-SW*.cfg from a Jinja template and pushed the whole file.
+#
+#   ansible-playbook playbooks/network/l2.yml --ask-vault-pass
+- name: Converge L2 interface intent
+  hosts: network
+  gather_facts: false
+
+  tasks:
+    - name: Declare IOS L2 interfaces
+      when:
+        - "'ios' in ansible_network_os"
+        - intended_l2 is defined
+      cisco.ios.ios_l2_interfaces:
+        config: "{{ intended_l2 }}"
+        state: replaced
+
+    - name: Declare NX-OS L2 interfaces
+      when:
+        - "'nxos' in ansible_network_os"
+        - intended_l2 is defined
+      cisco.nxos.nxos_l2_interfaces:
+        config: "{{ intended_l2 }}"
+        state: replaced
+
+    - name: Declare EOS L2 interfaces
+      when:
+        - "'eos' in ansible_network_os"
+        - intended_l2 is defined
+      arista.eos.eos_l2_interfaces:
+        config: "{{ intended_l2 }}"
+        state: replaced
+
+    - name: Say so when a host carries no intent
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: no intended_l2 in host_vars, nothing asserted"
+      when: intended_l2 is not defined
