@@ -3,9 +3,11 @@ name: ci
 
 on:
   push:
-    # `main` is the default branch on the remote; `master` is kept so a rename in either
-    # direction cannot silently disable CI. Checked with `git ls-remote --symref origin HEAD`.
-    branches: [main, master, "modernize/**"]
+    # Only the default branches. A feature branch is tested by its pull request; triggering
+    # both events runs the same commit twice, which is how one run can be green and the other
+    # red for the same SHA and leave the PR stuck at "unstable".
+    # `main` is the default branch; `master` is kept so a rename cannot silently disable CI.
+    branches: [main, master]
   pull_request:
 
 permissions:
@@ -35,7 +37,7 @@ jobs:
           python-version: "3.12"
       - name: Install the pinned toolchain
         run: |
-          python -m pip install -q -r requirements.txt
+          python -m pip install --no-cache-dir --retries 5 --timeout 60 -q -r requirements.txt
           ansible-galaxy collection install -r requirements.yml -p ./collections
       - name: yamllint
         run: yamllint -f parsable -c .yamllint.yml .
@@ -64,7 +66,7 @@ jobs:
           python-version: "3.12"
       - name: Install the pinned toolchain
         run: |
-          python -m pip install -q -r requirements.txt
+          python -m pip install --no-cache-dir --retries 5 --timeout 60 -q -r requirements.txt
           ansible-galaxy collection install -r requirements.yml -p ./collections
       - name: Converge a container twice and assert changed=0
         env:
@@ -81,7 +83,7 @@ jobs:
           python-version: "3.12"
       - name: Install the pinned toolchain
         run: |
-          python -m pip install -q -r requirements.txt
+          python -m pip install --no-cache-dir --retries 5 --timeout 60 -q -r requirements.txt
           ansible-galaxy collection install -r requirements.yml -p ./collections
       - name: Deploy the fabric if the images exist
         env:
