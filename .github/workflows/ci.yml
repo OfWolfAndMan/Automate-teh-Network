@@ -40,6 +40,8 @@ jobs:
       - name: yamllint
         run: yamllint -f parsable -c .yamllint.yml .
       - name: syntax-check every playbook
+        env:
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
         run: |
           set -e
           for f in playbooks/*/*.yml; do
@@ -47,6 +49,9 @@ jobs:
             ansible-playbook --syntax-check -i inventories/lab/hosts.yml "$f" >/dev/null
           done
       - name: ansible-lint
+        env:
+          # ansible-lint resolves modules through the same path the playbooks use
+          ANSIBLE_COLLECTIONS_PATH: ${{ github.workspace }}/collections
         run: ansible-lint playbooks/ roles/
 
   e2e-linux:
