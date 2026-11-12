@@ -10,6 +10,10 @@ ansible-core==2.21.6
 # ansible.utils.validate needs it on the control node: the compliance role checks
 # policies/compliance.yml against its JSON Schema before evaluating anything.
 jsonschema==4.26.0
+# The ntc_templates parser behind ansible.utils.cli_parse (playbooks/network/show.yml) runs
+# on the control node and imports this package. It was missing: show.yml could only ever
+# have worked on a machine that happened to have the examples' requirements installed.
+ntc-templates==9.3.0
 
 # Optional tooling used by `make lint`. Kept separate from the runtime pin so a
 # lint upgrade never silently changes the ansible-core under test.

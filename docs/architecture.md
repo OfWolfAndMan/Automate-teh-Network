@@ -47,7 +47,7 @@ docs/                       the standards this repository is held to
 
 | Layer | Needs | Proves |
 |-------|-------|--------|
-| `make test` | python, ansible-core | scrub, inventory parse, syntax, README index, pytest, compliance against the fixtures |
+| `make test` | python, ansible-core | scrub, inventory parse, syntax, README index, pytest, compliance and show.yml against the fixtures |
 | `make e2e-linux` | docker | a playbook converges and is idempotent (pass 2 changed=0) |
 | `make e2e-network` | containerlab + vendor images | the same, against a fabric |
 

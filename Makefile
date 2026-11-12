@@ -3,7 +3,7 @@
 
 PY ?= python3
 
-.PHONY: help setup inventory preflight lint syntax docs-check scrub pytest compliance test full e2e-linux e2e-network lab-up lab-down index index-check
+.PHONY: help setup inventory preflight lint syntax docs-check scrub pytest compliance show test full e2e-linux e2e-network lab-up lab-down index index-check
 
 help:
 	@printf '%-12s %s\n' \
@@ -16,6 +16,7 @@ help:
 	  docs-check "markdown structure of README and docs/" \
 	  pytest    "unit tests: the compliance filter and the examples" \
 	  compliance "the compliance playbook, end to end, against the fixtures" \
+	  show      "show.yml parse + save, end to end, against saved captures" \
 	  test      "the whole harness, in order"
 
 setup:
@@ -36,7 +37,7 @@ syntax:
 lint: syntax
 	yamllint -f parsable -c .yamllint.yml .
 	ruff check .
-	ansible-lint playbooks/ || true
+	ansible-lint playbooks/ roles/
 
 e2e-linux:
 	bash scripts/e2e_linux.sh
@@ -75,7 +76,10 @@ pytest:
 compliance:
 	bash scripts/e2e_compliance.sh
 
-test: scrub inventory syntax index-check docs-check pytest compliance
+show:
+	bash scripts/e2e_show.sh
+
+test: scrub inventory syntax index-check docs-check pytest compliance show
 	@echo "harness ok"
 
 full: test e2e-linux

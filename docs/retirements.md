@@ -77,3 +77,36 @@ reports on a "verified devices" list nothing in the repository ever populates.
 | `Makefile`, `.flake8`, `.bandit`, `pyproject.toml` | targets wrote into `Logs/` and `compliance/`, which did not exist; `make`, ruff and pytest configuration here replace them |
 | `sample-report-25-08-2019_20:14:00.txt`, `Workflow.png` | output and a diagram of the retired pipeline |
 | `README.md` | described the service above |
+
+## Absorbed: NotLayer3-NetworkAutomation (2020)
+
+The earlier, 2020 edition of the same course: Python lessons plus a "final project" that is
+the compliance service the mini-course later refined. Ported fresh, not merged, for the
+same reason: its files and history carry plaintext device passwords and real, routable
+addresses.
+
+Most of it was already superseded by the mini-course work above. Three pieces were not.
+
+### Carried over from NotLayer3
+
+| Course file | Successor | What changed |
+|-------------|-----------|--------------|
+| `runner.py get-cdp-data`, `utils.parse_outputs` | `playbooks/network/show.yml` with `show_save=true` | any command, not only CDP; parsed by `ansible.utils.cli_parse` and saved as JSON per host; a saved capture can be parsed offline (`show_text_file`), which is how it is now tested |
+| `advanced_python/comprehensions.py` | `examples/python/comprehensions.py` | `ipaddress` membership instead of `startswith("192.168.")`; works over the real inventory |
+| `basic-python/connections.py`, `utils.get_config` error handling | `examples/python/connect_with_logging.py` | named Netmiko exceptions instead of a bare `except:`; logging configured in `main()`, not at import |
+
+### Not carried over from NotLayer3
+
+| Course file | Reason |
+|-------------|--------|
+| `main.py`, `pre-checks.py`, `utils.py` (compliance parts), `APIs/` (`app.py`, `data/policies.yml`), `Final Project Details/Required Data`, `Makefile` | the compliance service, superseded by `playbooks/network/compliance.yml`. Its six policies are the mini-course's six, one-for-one; see above for how each was carried or corrected. |
+| `APIs/data/devices.yml` | five devices, each with the same plaintext password; `inventories/lab/` and the vault replace it |
+| `advanced_python/classes.py`, `advanced_python/regex.py` | covered by `examples/python/device.py` and `access_ports.py` |
+| `advanced_python/template-renderer.py`, `configTemplates/**` | whole-config Jinja rendering, retired in Phase 2 |
+| `advanced_python/documenting.py`, `os-sys.py` | a docstring around a function calling an undefined class, and `print(os.getcwd())`; every example now carries docstrings and type hints |
+| `basic-python/variables.py`, `file_mgmt.py`, `my-yam.yml`, `*.txt` | first-week Python (variables, files, YAML) with plaintext passwords and two globally routable public addresses as sample data |
+| `log.txt`, `basic-python/log.txt` | 23,966 lines of 2020 connection logs committed by mistake |
+| `tests/test_main.py` | a stray `g` on line 15 raises NameError at import, so pytest could not collect it — it never ran |
+| `git-basics.txt` | a git cheat sheet; nothing here depends on it |
+| `Final Project Details/Postman-install` | CentOS 7 install notes for Postman, for an API that is retired |
+| `requirements.txt`, `basic-python/requirements.txt`, `.flake8` | unpinned; replaced by the pinned top-level files and ruff |
