@@ -37,7 +37,7 @@ syntax:
 lint: syntax
 	yamllint -f parsable -c .yamllint.yml .
 	ruff check .
-	ansible-lint playbooks/ || true
+	ansible-lint playbooks/ roles/
 
 e2e-linux:
 	bash scripts/e2e_linux.sh
