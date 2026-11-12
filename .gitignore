@@ -20,3 +20,9 @@ inventories/*/*_vault.yml
 
 # Phase 3: collected configurations and facts are output, not source
 .artifacts/
+
+# Python: interpreter and tool caches are per-machine state, not source
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
