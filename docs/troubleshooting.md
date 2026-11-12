@@ -10,11 +10,17 @@ these are the failures this repository produces, not the general population.
 
 ### `No matching distribution found for ansible-core==2.21.6`
 
-**Why.** `pip` cannot find that exact version on the package index it is using. Either the
-version does not exist (a typo, or a version newer than the index carries), or a proxy is
-blocking PyPI.
+**Why.** `pip` cannot find that exact version on the package index it is using. Three
+causes, most common first:
 
-**Fix.** Check what is available:
+- **Your Python is too old.** `ansible-core` 2.21.6 needs Python 3.12 or newer. `pip` says so
+  just above the error, as `Ignored the following versions that require a different python
+  version: ... 2.21.6 Requires-Python >=3.12`. Check with `python3 --version`; if it is older,
+  install 3.12 and make the virtual environment from that interpreter.
+- The version does not exist (a typo, or a version newer than the index carries).
+- A proxy is blocking PyPI.
+
+**Fix.** For the second and third causes, check what is available:
 
 ```bash
 python3 -m pip index versions ansible-core | head -3
@@ -154,6 +160,42 @@ without a `creates:` guard, or a template that renders a timestamp.
 it. `command:` accepts `creates:` (run only if this file is absent) and `changed_when:`
 (decide for yourself whether a change occurred). The whole point of the exercise is that the
 second run says `changed=0`.
+
+### `Failed to import the required Python library (ntc-templates)`
+
+**Why.** `playbooks/network/show.yml` parses output with the `ntc_templates` parser, which
+imports the `ntc-templates` package on the machine running Ansible. It is pinned in
+`requirements.txt`; an environment built before that pin was added does not have it.
+
+**Fix.** Reinstall the pinned toolchain into the environment you run Ansible from:
+
+```bash
+make setup
+```
+
+### `Conditional result (True) was derived from value of type 'str'`
+
+**Why.** Recent `ansible-core` versions refuse a `when:` that is a string rather than a true
+or false value. `when: some_variable` used to be accepted when the variable was a non-empty
+string; it is now an error, and the message names where the string came from — for example
+`<CLI option '-e'>` for a value passed with `-e`.
+
+**Fix.** Say what you mean: compare, test length, or convert.
+
+```yaml
+when: some_variable | length > 0      # "is it set to something?"
+when: some_variable | bool            # "is it a yes/no value?"
+```
+
+### `fatal: [SW1]: FAILED! => ... 1 of 6 policies violated`
+
+**Why.** Not a fault. This is `playbooks/network/compliance.yml` reporting that a device
+breaks a policy, and the offline run against `tests/fixtures/` is built to find exactly four
+such hosts (`SW1` to `SW4`, for `no-domain-lookup`). See `docs/compliance.md`.
+
+**Fix.** Nothing is broken. To see the report without the red, add
+`-e network_compliance_fail_on_violation=false`. If a host fails that you did not expect,
+read `.artifacts/compliance/report.md`: it names the policy and says what it looked for.
 
 ---
 

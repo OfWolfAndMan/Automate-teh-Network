@@ -6,7 +6,8 @@ What this repository is, and what it refuses to be.
 
 ```text
 ansible.cfg                 toolchain behaviour: inventory, collections, timeouts
-requirements.txt            pinned ansible-core and lint tooling
+requirements.txt            pinned ansible-core, control-node libraries, lint and test tooling
+pyproject.toml              pytest and ruff configuration
 requirements.yml            pinned collections
 inventories/lab/            the only inventory: hosts, group_vars, host_vars
 playbooks/network/          device-facing: backup, compliance, facts, interfaces, l2, hardening, show
@@ -19,7 +20,8 @@ examples/python/            teaching programs for when Ansible is not enough
 tools/shield/               the containment scrub
 tools/gen_index.py          README inventory generated from playbook metadata
 lab/                        containerlab topology + the container target
-scripts/e2e_*.sh            the two lab layers and their assertions
+scripts/e2e_*.sh            the two lab layers, and the offline compliance and show runs
+tests/                      pytest, offline inventories, and fixtures (read-only device output)
 docs/                       the standards this repository is held to
 ```
 

@@ -52,7 +52,7 @@ You need:
 | Requirement | Why | How to check |
 |-------------|-----|--------------|
 | Linux or macOS | the exercise is written for a POSIX shell | `uname` |
-| Python 3.11 or newer | Ansible is a Python program | `python3 --version` |
+| Python 3.12 or newer | Ansible is a Python program, and the pinned version does not install on older ones | `python3 --version` |
 | Git | to get the code | `git --version` |
 | Docker (optional) | one exercise runs a throwaway container; everything else works without it | `docker info` |
 
@@ -316,8 +316,9 @@ containers and no devices. Delete `practice.yml` afterwards; it is not part of t
 
 ## Step 7 — the network playbooks, without a network
 
-You cannot run these against hardware you do not have. What you *can* do is read them and
-ask Ansible what they would do.
+You cannot run most of these against hardware you do not have. What you *can* do is read
+them, ask Ansible what they would do, and — for two of them — run them for real against
+device output that is saved in the repository.
 
 **List the tasks in a playbook without running them:**
 
@@ -344,6 +345,58 @@ ansible-playbook -i inventories/lab/hosts.yml playbooks/network/backup.yml --syn
 for its running configuration and saves it under `.artifacts/configs/` on *your* machine,
 not the device. Read the file — it is nine lines — and notice there is no `changed_when` and
 no clever logic: the module reports whether the configuration differed.
+
+### Run one for real: compliance, offline
+
+`playbooks/network/compliance.yml` answers a different question from the others. They
+*change* devices; this one only checks them: **is each device configured the way policy says
+it must be?** The saved device configurations in `tests/fixtures/backups/` are real enough to
+check, so you can run it with no hardware and no vault:
+
+```bash
+ansible-playbook -i tests/compliance/hosts.yml playbooks/network/compliance.yml
+```
+
+It takes about ten seconds and ends in red, on purpose. Thirteen of the seventeen hosts pass.
+Four — `SW1` to `SW4` — fail with:
+
+```text
+fatal: [SW1]: FAILED! => ... SW1: 1 of 6 policies violated — no-domain-lookup
+```
+
+That is the playbook working. Those four switches never say `no ip domain lookup`, so a
+mistyped command on them would be sent to DNS as a hostname. Open
+`.artifacts/compliance/report.md` for the same finding as a table, and
+`policies/compliance.yml` for the rule that caught it — it is a few lines of YAML, not code.
+
+**Now make it fail on purpose.** Copy the policies, change one rule, and point the playbook
+at your copy so the repository's own file stays untouched:
+
+```bash
+cp policies/compliance.yml /tmp/strict.yml
+sed -i 's/config: "ip ssh version 2"/config: "ip ssh version 1"/' /tmp/strict.yml
+ansible-playbook -i tests/compliance/hosts.yml playbooks/network/compliance.yml \
+  -e network_compliance_policy_file=/tmp/strict.yml
+```
+
+Now fourteen hosts fail: every router and switch that runs IOS, because none of them says
+`ip ssh version 1`. The three Arista hosts still pass, because that policy does not apply to
+them. Open the report again and find the new violation. Everything about how a policy is
+written is in `docs/compliance.md`.
+
+`playbooks/network/show.yml` can also run offline. It runs a `show` command, turns the text
+into structured data, and can save it as JSON. Give it a capture instead of a device:
+
+```bash
+ansible-playbook -i tests/show/hosts.yml playbooks/network/show.yml \
+  -e 'show_text_file=tests/fixtures/show/{{ inventory_hostname }}_show_version.txt'
+```
+
+Look for the `serial` list in the output: a switch *stack* has one serial per member, which is
+why it prints as a list.
+
+Both are marked `partial` in the README table. What ran here is the parsing, the checking and
+the report. What did not run is the step that collects the text from a live device.
 
 ### Pointing it at a real device
 
@@ -392,6 +445,9 @@ four errors that account for almost all first attempts.
 
 - `docs/glossary.md` — every term in this repository, in one sentence each.
 - `docs/reading-a-playbook.md` — one playbook annotated line by line.
+- `docs/compliance.md` — write your own policy and check a device against it.
+- `examples/python/README.md` — seven short Python programs for when Ansible is not the right
+  tool: regular expressions, parsing, SQL, classes, asyncio, logging. Four run offline.
 - `docs/architecture.md` — why the repository is arranged this way.
 - `docs/addressing-and-placeholder-standard.md` — the rule that keeps credentials and real
   addresses out of the repository.
@@ -405,7 +461,8 @@ four errors that account for almost all first attempts.
 make setup            # install the pinned toolchain (once)
 make inventory        # show the machines Ansible knows about
 make preflight        # check the setup; contacts nothing
-make test             # scrub + inventory + syntax + README index
+make test             # scrub, inventory, syntax, README index, docs, pytest,
+                      # and the compliance and show playbooks run offline
 make full             # everything above, plus the container exercise
 
 ansible-playbook -i inventories/lab/hosts.yml <playbook> --ask-vault-pass
